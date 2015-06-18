@@ -23,7 +23,7 @@
 #include "bilingualModel.h"
 #include <iostream>
 #include <fstream>
-#include <omp.h>
+#include <boost/thread/thread.hpp>
 
 // #include <thread>
 // #include <boost/lockfree/queue.hpp>
@@ -54,6 +54,8 @@ bilingualModel::bilingualModel(string FileNameMS, string FileNameMT)
 {
     ms = new multimap< size_t, biWord* >();
     mt = new multimap< size_t, biWord* >();
+    mapS = new multimap< string, size_t >();
+    mapT = new multimap< string, size_t >();
     nthreads = 4;
     ifstream fichierMS; 
     fichierMS.open( FileNameMS.c_str());
@@ -88,18 +90,22 @@ bilingualModel::bilingualModel(string FileNameMS, string FileNameMT)
     vector_size=l_data.at(1);
     cerr << vocab_size_src << "\t" << vector_size << endl;
     pair<size_t, biWord*> * p;
+    pair<string, size_t> * p_bis;
     while (getline ( fichierMS, line ))
     {
-	l_cpt++;
 	l_data_str=stringToVector(line," ");
-	l_biWord = new biWord(l_data_str.at(0), copyVectorDouble(l_data_str,1,vector_size + 1));
+	l_biWord = new biWord(l_data_str.at(0), copyVectorDouble(l_data_str,1,vector_size + 1), l_cpt);
 	p = new pair<size_t, biWord*>(l_biWord->getKey(),l_biWord);
+	p_bis = new pair<string, size_t>((*l_biWord->getToken()),l_biWord->getKey());
+	mapS->insert((*p_bis));
 	ms->insert((*p));
+	l_cpt++;
 	if ((l_cpt % (vocab_size_src/100)) == 0) 
 	{
 	    cerr <<".";
 	}
 	delete(p);
+	delete(p_bis);
     }
     cerr <<".OK!"<<endl;
     l_cpt=0;
@@ -115,59 +121,116 @@ bilingualModel::bilingualModel(string FileNameMS, string FileNameMT)
     cerr << vocab_size_tgt << "\t" << vector_size << endl;
     while (getline ( fichierMT, line ))
     {
-	l_cpt++;
 	l_data_str=stringToVector(line," ");
-	l_biWord = new biWord(l_data_str.at(0), copyVectorDouble(l_data_str,1,vector_size + 1));
+	l_biWord = new biWord(l_data_str.at(0), copyVectorDouble(l_data_str,1,vector_size + 1), l_cpt);
 	p = new pair<size_t, biWord*>(l_biWord->getKey(),l_biWord);
 	mt->insert((*p));
+	p_bis = new pair<string, size_t>((*l_biWord->getToken()),l_biWord->getKey());
+	mapT->insert((*p_bis));
+	l_cpt++;
 	if ((l_cpt % (vocab_size_tgt/100)) == 0) 
 	{
 	    cerr <<".";
 	}
 	delete(p);
+	delete(p_bis);
     }
     cerr <<".OK!"<<endl;
-    distance = new multimap< size_t, multimap< size_t, double  >* > ();
+//     distance = new multimap< size_t, multimap< size_t, float  >* > ();
     multimap< size_t, biWord* >::iterator l_iter_src;
     multimap< size_t, biWord* >::iterator l_iter_tgt;
-    double l_score = 0.0;
+    float l_score = 0.0;
     l_iter_src=ms->begin();
     l_cpt=0;
-    # ifdef _OPENMP
-      printf("Compiled by an OpenMP-compliant implementation.\n");
-      omp_set_num_threads(10);
-    # endif    
-    #pragma omp parallel
+    boost::thread_group group;
+    vector<boost::thread*> g_threads;
+    d_scores = new vector < vector<float> >;
+    vector<float> v (vocab_size_tgt + 1,0.0);
+    for (l_cpt=0; l_cpt < vocab_size_src +1 ; l_cpt++)
+    {
+	d_scores->push_back(v);
+	if ((l_cpt % (vocab_size_src/100)) == 0) 
+	{
+	    cerr <<".";
+	}
+    }
+    int l_inc_score=0;
+    cerr << ".OK" <<endl;
+    boost::thread *t;
     while (l_iter_src != ms->end())
     {
 	l_cpt++;
-	subprocess(l_iter_src);
+	t = new boost::thread(boost::bind(&bilingualModel::subprocess,this,(*l_iter_src).second));
+// 	t = new boost::thread(bilingualModel subprocess,(*l_iter_src).second));
+// 	multimap< size_t, float  >* l_multimap = new multimap< size_t, float  >();
+// 	multimap< size_t, biWord* >::iterator l_iter_tgt;
+// 	float l_score=0.0;
+// 	vector<float> v_scores(vocab_size_tgt+1,0.0);
+// 	    t = new boost::thread(&
+// 	subprocess((*l_iter_src).second);
+// 	    Tools::cosine((*(l_iter_src)).second->getEmbeddings(),(*(l_iter_tgt)).second->getEmbeddings(),  (*l_iter_src).second->getMagnitude(), (*l_iter_tgt).second->getMagnitude(), d_scores->at(l_inc_score));
+	group.add_thread(t);
+	if (l_cpt % 20 == 0)
+	{
+// 		cerr<< ".";
+	    group.join_all();
+//     	    exit(0);
+	}
+// 	group.join_all();
+// 	l_iter_tgt=mt->begin();
+// 	l_inc_score=0;
 	l_iter_src++;
+// 	cerr <<".";
 	if ((l_cpt % (vocab_size_src/100)) == 0) 
 	{
 	    cerr <<".";
 // 	    exit(0);
 	}
     }
+    group.join_all();
+//     return;
+//     while (l_iter_src != ms->end())
+//     {
+// 	l_cpt++;
+// // 	boost::thread *t;
+// // 	t = new boost::thread(&subprocess,l_iter_src);
+// 	multimap< size_t, float  >* l_multimap = new multimap< size_t, float  >();
+// 	multimap< size_t, biWord* >::iterator l_iter_tgt;
+// // 	float l_score=0.0;
+// // 	vector<float> v_scores(vocab_size_tgt+1,0.0);
+// 	l_iter_tgt=mt->begin();
+// 	while (l_iter_tgt != mt->end())
+// 	{
+// 	    pair<size_t, float> pt((*l_iter_tgt).first,(float)d_scores->at(l_inc_score));
+// 	    l_multimap->insert(pt);
+// 	    l_iter_tgt++;
+// 	    l_inc_score++;
+// 	}
+// 	pair<size_t, multimap< size_t, float  >*> ps((*l_iter_src).first,l_multimap);
+// 	distance->insert(ps);
+// 	delete(l_multimap);
+//       
+//     }
+
     cerr <<".OK!"<<endl;
     
 
 }
-void bilingualModel::subprocess(multimap< size_t, biWord* >::iterator l_iter_src)
+
+void bilingualModel::subprocess(biWord* l_bi_word)
 {
-	multimap< size_t, double  >* l_multimap = new multimap< size_t, double  >();
+// 	vector<float> * v_scores = new vector<float> ((int)ms->size()+1,0.0);
 	multimap< size_t, biWord* >::iterator l_iter_tgt;
+// 	long long int l_inc_score=0;
 	l_iter_tgt=mt->begin();
-	double l_score=0.0;
 	while (l_iter_tgt != mt->end())
 	{
-	    l_score = Tools::cosine((*(l_iter_src)).second->getEmbeddings(),(*(l_iter_tgt)).second->getEmbeddings(),  (*l_iter_src).second->getMagnitude(), (*l_iter_tgt).second->getMagnitude());
-	    pair<size_t, double> pt((*l_iter_tgt).first,l_score);
-	    l_multimap->insert(pt);
+// 	    cerr << d_scores->at(l_bi_word->getKey()).at((*l_iter_tgt).second->getKey()) << endl;
+	    Tools::cosine(l_bi_word->getEmbeddings(),(*(l_iter_tgt)).second->getEmbeddings(),  l_bi_word->getMagnitude(), (*l_iter_tgt).second->getMagnitude(), d_scores->at(l_bi_word->getKey()).at((*l_iter_tgt).second->getKey()));
+// 	    l_inc_score++;
 	    l_iter_tgt++;
 	}
-	pair<size_t, multimap< size_t, double  >*> ps((*l_iter_src).first,l_multimap);
-	distance->insert(ps);
-	delete(l_multimap);
-}
+	
+	  
 
+}
