@@ -19,8 +19,8 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * **********************************/
-#ifndef __BILINGUAL_H__
-#define __BILINGUAL_H__
+#ifndef __BIWORD_H__
+#define __BIWORD_H__
 
 #include "tools.h"
 #include <string>
@@ -42,6 +42,7 @@ using namespace Tools;
         public:
       
 	  biWord(string s, vector< double > v);
+	  ~biWord();
 	  size_t getKey();
 	  double getMagnitude();
 	  string * getToken();

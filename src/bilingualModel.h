@@ -19,49 +19,32 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * **********************************/
+#ifndef __BILINGUAL_H__
+#define __BILINGUAL_H__
+
+#include "tools.h"
 #include "biword.h"
+
+
 
 using namespace std;
 using namespace Tools;
-// namespace bilingualDistance
-// {
-biWord::biWord(string s, vector<double> v)
-{
-    key = Tools::hashValueBoost(s);
-    token = new string(s);
-    embbeddings = new vector<double>(v);
-    magnitude = Tools::magnitude(embbeddings);
-}
-double biWord::cosine(biWord* foreignBiWord)
-{
-    return Tools::cosine(getEmbeddings(), foreignBiWord->getEmbeddings(), getMagnitude(),foreignBiWord->getMagnitude() );
-}
-double biWord::cosine(vector< double >* foreignEmbeddings)
-{
-    return Tools::cosine(getEmbeddings(), foreignEmbeddings);
-}
-vector< double >* biWord::getEmbeddings()
-{
-    return embbeddings;
-}
-size_t biWord::getKey()
-{
-    return key;
-}
-double biWord::getMagnitude()
-{
-    return magnitude;
-}
-string* biWord::getToken()
-{
-    return token;
-}
-biWord::~biWord()
-{
-    delete(token);
-    delete(embbeddings);
-}
 
-    
-  
-// }
+class bilingualModel
+{
+    private:
+      multimap< size_t, biWord*  > * ms;
+      multimap< size_t, biWord*  > * mt;
+      multimap< size_t, multimap< size_t, double  >* > * distance;
+      int nthreads;
+    public:
+      bilingualModel();
+      bilingualModel(string FileNameMS, string FileNameMT);
+      ~bilingualModel();
+      multimap< size_t, biWord*  > * getMS();
+      multimap< size_t, biWord*  > * getMT();
+      void subprocess(multimap< size_t, biWord* >::iterator l_iter_src);
+};
+
+
+#endif

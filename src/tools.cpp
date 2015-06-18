@@ -890,5 +890,80 @@ namespace Tools
         boost::hash<string> hasher;
         return hasher ( s );
     }
-
+    double dotProduct(vector< double >* v1, vector< double >* v2)
+    {
+	int l_i;
+	double to_return=0;
+	if ((int)v1->size() != (int)v2->size())
+	  return -1;
+	for (l_i=0; l_i<(int)v1->size(); l_i++)
+	{
+	    to_return = to_return + (v1->at(l_i) * v2->at(l_i));
+	}
+	return to_return;
+    }
+    double magnitude(vector< double >* v)
+    {
+	int l_i;
+	double to_return=0;
+	for (l_i=0; l_i<(int)v->size(); l_i++)
+	{
+	    to_return = to_return + (v->at(l_i) * v->at(l_i));
+	}
+	return sqrt(to_return);
+    }
+    double cosine(vector< double >* v1, vector< double >* v2)
+    {
+	if ((int)v1->size() != (int)v2->size())
+	  return -1;
+	double dp=dotProduct(v1,v2);
+	double m1=magnitude(v1);
+	double m2=magnitude(v2);
+	return (dp/(m1*m2));
+    }
+    double cosine(vector< double >* v1, vector< double >* v2, double m1, double m2)
+    {
+	if ((int)v1->size() != (int)v2->size())
+	  return -1;
+	double dp=dotProduct(v1,v2);
+	return (dp/(m1*m2));
+    }
+    vector< double > vectorStringToVectorDouble(vector< string > v)
+    {
+	vector< double > to_return;
+	int l_i;
+	for (l_i=0; l_i<(int)v.size(); l_i++)
+	{
+	    to_return.push_back((double)atof(v.at(l_i).c_str()));
+	}
+	return to_return;
+    }
+    vector< string > copyVector(vector< string > v, int start, int end)
+    {
+	vector< string > to_return;
+	int l_i;
+	if (end > (int)v.size())
+	{
+	    end = (int)v.size();
+	}
+	for (l_i=start; l_i < end; l_i++)
+	{
+	    to_return.push_back(v.at(l_i));
+	}
+	return to_return;
+    }
+    vector< double > copyVectorDouble(vector< string > v, int start, int end)
+    {
+	vector< double > to_return;
+	int l_i;
+	if (end > (int)v.size())
+	{
+	    end = (int)v.size();
+	}
+	for (l_i=start; l_i < end; l_i++)
+	{
+	    to_return.push_back((double)atof(v.at(l_i).c_str()));
+	}
+	return to_return;
+    }
 }
