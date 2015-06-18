@@ -24,36 +24,23 @@ PROJECT(tercpp)
 
 include_directories(BEFORE ${CMAKE_SOURCE_DIR}/src)
 
-SET(tercpp_SRCS
+SET(wookie_SRCS
    main.cpp
    ${CMAKE_SOURCE_DIR}/src/tools.cpp
-   ${CMAKE_SOURCE_DIR}/src/bestShiftStruct.cpp
-   ${CMAKE_SOURCE_DIR}/src/xmlStructure.cpp
-   ${CMAKE_SOURCE_DIR}/src/alignmentStruct.cpp
-   ${CMAKE_SOURCE_DIR}/src/terAlignment.cpp
-   ${CMAKE_SOURCE_DIR}/src/stringHasher.cpp
-   ${CMAKE_SOURCE_DIR}/src/stringInfosHasher.cpp
-   ${CMAKE_SOURCE_DIR}/src/infosHasher.cpp
-   ${CMAKE_SOURCE_DIR}/src/hashMap.cpp
-   ${CMAKE_SOURCE_DIR}/src/tercalc.cpp
-   ${CMAKE_SOURCE_DIR}/src/hashMapInfos.cpp
-   ${CMAKE_SOURCE_DIR}/src/hashMapStringInfos.cpp
-   ${CMAKE_SOURCE_DIR}/src/terShift.cpp
-   ${CMAKE_SOURCE_DIR}/src/segmentStructure.cpp
-   ${CMAKE_SOURCE_DIR}/src/tinystr.cpp  
-   ${CMAKE_SOURCE_DIR}/src/tinyxml.cpp  
-   ${CMAKE_SOURCE_DIR}/src/tinyxmlerror.cpp  
-   ${CMAKE_SOURCE_DIR}/src/tinyxmlparser.cpp
-   ${CMAKE_SOURCE_DIR}/src/sgmlDocument.cpp
-   ${CMAKE_SOURCE_DIR}/src/multiTxtDocument.cpp
-   ${CMAKE_SOURCE_DIR}/src/documentStructure.cpp
-   ${CMAKE_SOURCE_DIR}/src/multiEvaluation.cpp
+   ${CMAKE_SOURCE_DIR}/src/biword.cpp
+   ${CMAKE_SOURCE_DIR}/src/bilingualModel.cpp
 )
 
-add_executable(tercpp.0.7.1 ${tercpp_SRCS})
+SET(threads_tests_SRCS
+   main_test.cpp
+   
+)
 
-#target_link_libraries(tercpp.0.7.1 tcmalloc)
+add_executable(wookie ${wookie_SRCS})
+add_executable(threads_tests ${threads_tests_SRCS})
+
+target_link_libraries(wookie boost_regex boost_system boost_filesystem boost_iostreams gomp boost_thread)
 # target_link_libraries(tercpp tercalc xmlStructure documentStructure multiEvaluation)
-
-install(TARGETS tercpp.0.7.1 DESTINATION bin)
+# 
+install(TARGETS wookie threads_tests DESTINATION bin)
 
