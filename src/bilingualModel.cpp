@@ -133,11 +133,11 @@ bilingualModel::bilingualModel(string FileNameMS, string FileNameMT)
     double l_score = 0.0;
     l_iter_src=ms->begin();
     l_cpt=0;
-    # ifdef _OPENMP
-      printf("Compiled by an OpenMP-compliant implementation.\n");
-      omp_set_num_threads(10);
-    # endif    
-    #pragma omp parallel
+//     # ifdef _OPENMP
+//       printf("Compiled by an OpenMP-compliant implementation.\n");
+//       omp_set_num_threads(10);
+//     # endif    
+//     #pragma omp parallel*/
     while (l_iter_src != ms->end())
     {
 	l_cpt++;
@@ -150,6 +150,7 @@ bilingualModel::bilingualModel(string FileNameMS, string FileNameMT)
 	}
     }
     cerr <<".OK!"<<endl;
+    
     
 
 }
