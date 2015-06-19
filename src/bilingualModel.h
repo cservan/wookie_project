@@ -47,6 +47,7 @@ class bilingualModel
       multimap< size_t, biWord*  > * getMS();
       multimap< size_t, biWord*  > * getMT();
       void subprocess(biWord* l_bi_word);
+      biWord * recherche(string s);
 };
 
 

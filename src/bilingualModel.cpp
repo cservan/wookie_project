@@ -234,3 +234,37 @@ void bilingualModel::subprocess(biWord* l_bi_word)
 	  
 
 }
+
+bool mySortingFunction ( const pair<float, int>& i, const pair<float, int>& j )
+{
+    if ( i.first > j.first ) return false;
+    if ( j.first >= i.first ) return true;
+    return true;
+// 	return j.second < i.second;
+}
+
+biWord* bilingualModel::recherche(string s)
+{
+	size_t src_id=-1;
+	biWord * to_retrun;
+// 	to_retrun = new biWord();
+	multimap< string, size_t  >::iterator mapS_iter = mapS->find(s);
+	if (mapS->find(s) == mapS->end())
+	{
+	    return NULL;
+	}
+	src_id=(*mapS_iter).second;
+	vector< pair <float, int > > * resultats = new vector< pair <float, int > >();
+	int l_inc;
+	pair <float, int > p(0.0,-1);
+	for (l_inc = 0; l_inc < d_scores->at(src_id).size(); l_inc++)
+	{
+	    p.first = d_scores->at(src_id).at(l_inc);
+	    p.second = l_inc;
+	}
+	sort ( resultats->begin(), resultats->end() );
+	
+
+}
+
+
