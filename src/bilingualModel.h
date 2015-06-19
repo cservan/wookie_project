@@ -35,15 +35,18 @@ class bilingualModel
     private:
       multimap< size_t, biWord*  > * ms;
       multimap< size_t, biWord*  > * mt;
-      multimap< size_t, multimap< size_t, double  >* > * distance;
+      multimap< string, size_t  > * mapS;
+      multimap< string, size_t  > * mapT;
+//       multimap< size_t, multimap< size_t, double  >* > * distance;
       int nthreads;
+      vector< vector<float> > * d_scores;
     public:
       bilingualModel();
       bilingualModel(string FileNameMS, string FileNameMT);
       ~bilingualModel();
       multimap< size_t, biWord*  > * getMS();
       multimap< size_t, biWord*  > * getMT();
-      void subprocess(multimap< size_t, biWord* >::iterator l_iter_src);
+      void subprocess(biWord* l_bi_word);
 };
 
 

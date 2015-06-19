@@ -928,6 +928,16 @@ namespace Tools
 	double dp=dotProduct(v1,v2);
 	return (dp/(m1*m2));
     }
+    void cosine(vector< double >* v1, vector< double >* v2, double m1, double m2, float & result)
+    {
+	if ((int)v1->size() != (int)v2->size())
+	{
+	    result = -1;
+	    return;
+	}
+	float dp=dotProduct(v1,v2);
+	result = (dp/(m1*m2));
+    }
     vector< double > vectorStringToVectorDouble(vector< string > v)
     {
 	vector< double > to_return;

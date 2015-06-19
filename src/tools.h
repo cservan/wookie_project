@@ -118,6 +118,7 @@ struct param
     double cosine(vector<double> * v1 , vector< double> * v2);
     double cosine(vector<double> * v1 , vector< double> * v2);
     double cosine(vector<double> * v1 , vector< double> * v2, double m1, double m2);
+    void cosine(vector<double> * v1 , vector< double> * v2, double m1, double m2, float & result);
 
     double magnitude(vector<double> * v);
 // };

@@ -32,6 +32,13 @@ biWord::biWord(string s, vector<double> v)
     embbeddings = new vector<double>(v);
     magnitude = Tools::magnitude(embbeddings);
 }
+biWord::biWord(string s, vector<double> v, long int id)
+{
+    key = id;
+    token = new string(s);
+    embbeddings = new vector<double>(v);
+    magnitude = Tools::magnitude(embbeddings);
+}
 double biWord::cosine(biWord* foreignBiWord)
 {
     return Tools::cosine(getEmbeddings(), foreignBiWord->getEmbeddings(), getMagnitude(),foreignBiWord->getMagnitude() );

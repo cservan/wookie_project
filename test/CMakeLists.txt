@@ -1,11 +1,11 @@
 ################################################################
-# tercpp: an open-source Translation Edit Rate (TER) scorer tool for Machine Translation.
+# wookie: an open-source Translation Edit Rate (TER) scorer tool for Machine Translation.
 # 
 # Copyright 2010-2013, Christophe Servan, LIUM, University of Le Mans, France
 # Copyright 2015, Christophe Servan, GETALP-LIG, University of Grenoble, France
 # Contact: christophe.servan@gmail.com
 # 
-# The tercpp tool and library are free software: you can redistribute it and/or modify it
+# The wookie tool and library are free software: you can redistribute it and/or modify it
 # under the terms of the GNU Lesser General Public License as published by 
 # the Free Software Foundation, either version 3 of the licence, or
 # (at your option) any later version.
@@ -19,12 +19,12 @@
 # along with this library; if not, write to the Free Software Foundation,
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ################################################################
-PROJECT(tercpp)
+PROJECT(wookie)
 
 
 include_directories(BEFORE ${CMAKE_SOURCE_DIR}/src)
 
-SET(wookie_SRCS
+SET(bidistance_SRCS
    main.cpp
    ${CMAKE_SOURCE_DIR}/src/tools.cpp
    ${CMAKE_SOURCE_DIR}/src/biword.cpp
@@ -36,11 +36,12 @@ SET(threads_tests_SRCS
    
 )
 
-add_executable(wookie ${wookie_SRCS})
+add_executable(bidistance ${bidistance_SRCS})
 add_executable(threads_tests ${threads_tests_SRCS})
 
-target_link_libraries(wookie boost_regex boost_system boost_filesystem boost_iostreams gomp boost_thread)
-# target_link_libraries(tercpp tercalc xmlStructure documentStructure multiEvaluation)
+target_link_libraries(bidistance boost_regex boost_system boost_filesystem boost_iostreams gomp boost_thread)
+target_link_libraries(threads_tests boost_thread)
+# target_link_libraries(wookie tercalc xmlStructure documentStructure multiEvaluation)
 # 
-install(TARGETS wookie threads_tests DESTINATION bin)
+install(TARGETS bidistance threads_tests DESTINATION bin)
 

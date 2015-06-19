@@ -2,7 +2,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <unistd.h>
-#include <omp.h>
+#include <boost/thread/thread.hpp>
+// #include <boost/thread/thread_group.hpp>
 
 void print_somme(int x,int y, int j)
 {
@@ -15,14 +16,14 @@ void print_somme(int x,int y, int j)
 int main()
 {
   
-    # ifdef _OPENMP
-      printf("Compiled by an OpenMP-compliant implementation.\n");
-      omp_set_num_threads(10);
-    # endif
     int i;
-    #pragma omp parallel
+    boost::thread_group group;
+    
     for (i =0; i<10; i++)
     {
-	print_somme(i,i+1,i);
+	boost::thread *t;
+	t = new boost::thread(&print_somme,i,i+1,i);
+	group.add_thread(t);
     }
+    group.join_all();
 }

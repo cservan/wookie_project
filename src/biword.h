@@ -42,6 +42,7 @@ using namespace Tools;
         public:
       
 	  biWord(string s, vector< double > v);
+	  biWord(string s, vector< double > v, long int id);
 	  ~biWord();
 	  size_t getKey();
 	  double getMagnitude();
