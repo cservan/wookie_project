@@ -149,5 +149,34 @@ int main ( int argc, char *argv[] )
         usage();
     }
     bilingualModel l_bm(myParams.model_source, myParams.model_target);
+    string s="comptes";
+    vector< biWord>* resultats;
+//     while (s.compare("EXIT") != 0)
+//     {
+// 	resultats = new vector< biWord>;
+        
+	cout << "Entrez le mot à rechercher:"<<endl;
+// 	cin >> s ;
+	cout << "Nous cherchons :"<< s <<endl;
+	resultats = l_bm.recherche(s);
+	s=".";
+        resultats = l_bm.recherche(s);
+	s=",";
+        resultats = l_bm.recherche(s);
+	s="?";
+        resultats = l_bm.recherche(s);
+	s="!";
+        resultats = l_bm.recherche(s);	
+	if (s.compare("EXIT") == 0)
+	{
+	    return EXIT_SUCCESS;
+	}
+//	int i;
+	/*for (i = 0 ; i < (int)resultats->size(); i++)
+	{
+	    cout << resultats->at(i).shortToString();
+	  
+	}*/
+//     }
     return EXIT_SUCCESS;
 }

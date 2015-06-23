@@ -99,6 +99,7 @@ struct param
     vector<string> copyVector ( vector<string> vec );
     vector<string> copyVector ( vector<string> v , int start, int end);
     vector< double > copyVectorDouble(vector< string > v, int start, int end);
+    vector< float > copyVectorFloat(vector< string > v, int start, int end);
     vector<int> copyVector ( vector<int> vec );
     vector<float> copyVector ( vector<float> vec );
     vector<string> stringToVector ( string s, string tok );
@@ -106,6 +107,7 @@ struct param
     vector<string> stringToVector ( int s, string tok );
     vector<int> stringToVectorInt ( string s, string tok );
     vector<double> vectorStringToVectorDouble (vector<string> v);
+    vector<float> vectorStringToVectorFloat (vector<string> v);
     vector<float> stringToVectorFloat ( string s, string tok );
     string lowerCase(string str);
     string removePunct(string str);
@@ -120,7 +122,14 @@ struct param
     double cosine(vector<double> * v1 , vector< double> * v2, double m1, double m2);
     void cosine(vector<double> * v1 , vector< double> * v2, double m1, double m2, float & result);
 
+    float dotProduct(vector<float> * v1 , vector< float> * v2);
+    float cosine(vector<float> * v1 , vector< float> * v2);
+    float cosine(vector<float> * v1 , vector< float> * v2);
+    float cosine(vector<float> * v1 , vector< float> * v2, float m1, float m2);
+    void cosine(vector<float> * v1 , vector< float> * v2, float m1, float m2, float & result);
+
     double magnitude(vector<double> * v);
+    float magnitude(vector<float> * v);
 // };
     param copyParam(param p);    
     size_t hashValueBoost(string s);

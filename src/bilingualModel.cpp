@@ -69,6 +69,7 @@ bilingualModel::bilingualModel(string FileNameMS, string FileNameMT)
     int vocab_size_tgt=0;
     biWord * l_biWord;
     int l_cpt=0;
+    nbest=10;
     if (! fichierMS)
     {
 	cerr << "Error while opening " << FileNameMS <<endl;
@@ -94,7 +95,7 @@ bilingualModel::bilingualModel(string FileNameMS, string FileNameMT)
     while (getline ( fichierMS, line ))
     {
 	l_data_str=stringToVector(line," ");
-	l_biWord = new biWord(l_data_str.at(0), copyVectorDouble(l_data_str,1,vector_size + 1), l_cpt);
+	l_biWord = new biWord(l_data_str.at(0), copyVectorFloat(l_data_str,1,vector_size + 1), l_cpt);
 	p = new pair<size_t, biWord*>(l_biWord->getKey(),l_biWord);
 	p_bis = new pair<string, size_t>((*l_biWord->getToken()),l_biWord->getKey());
 	mapS->insert((*p_bis));
@@ -122,7 +123,7 @@ bilingualModel::bilingualModel(string FileNameMS, string FileNameMT)
     while (getline ( fichierMT, line ))
     {
 	l_data_str=stringToVector(line," ");
-	l_biWord = new biWord(l_data_str.at(0), copyVectorDouble(l_data_str,1,vector_size + 1), l_cpt);
+	l_biWord = new biWord(l_data_str.at(0), copyVectorFloat(l_data_str,1,vector_size + 1), l_cpt);
 	p = new pair<size_t, biWord*>(l_biWord->getKey(),l_biWord);
 	mt->insert((*p));
 	p_bis = new pair<string, size_t>((*l_biWord->getToken()),l_biWord->getKey());
@@ -237,34 +238,72 @@ void bilingualModel::subprocess(biWord* l_bi_word)
 
 bool mySortingFunction ( const pair<float, int>& i, const pair<float, int>& j )
 {
-    if ( i.first > j.first ) return false;
-    if ( j.first >= i.first ) return true;
-    return true;
+    if ( i.first > j.first ) return true;
+    else return false;
+//       
+//     if ( j.first >= i.first ) return false;
+//     return true;
 // 	return j.second < i.second;
 }
 
-biWord* bilingualModel::recherche(string s)
+vector<biWord> * bilingualModel::recherche(string s)
 {
 	size_t src_id=-1;
-	biWord * to_retrun;
+	vector<biWord> * to_retrun = new vector< biWord >;
 // 	to_retrun = new biWord();
 	multimap< string, size_t  >::iterator mapS_iter = mapS->find(s);
+	multimap< size_t , biWord* >::iterator found_iter ;
 	if (mapS->find(s) == mapS->end())
 	{
+	    cerr << "Attention mot non trouvé : " << s << endl;
 	    return NULL;
 	}
 	src_id=(*mapS_iter).second;
 	vector< pair <float, int > > * resultats = new vector< pair <float, int > >();
 	int l_inc;
 	pair <float, int > p(0.0,-1);
-	for (l_inc = 0; l_inc < d_scores->at(src_id).size(); l_inc++)
+	
+	cerr << d_scores->size() << endl;
+	cerr << d_scores->at(src_id).size() << endl;
+	for (l_inc = 0; l_inc < (int)d_scores->at(src_id).size(); l_inc++)
 	{
 	    p.first = d_scores->at(src_id).at(l_inc);
 	    p.second = l_inc;
+	    resultats->push_back(p);
+// 	    cerr << l_inc << "\t" << d_scores->at(src_id).at(l_inc) << endl;
 	}
-	sort ( resultats->begin(), resultats->end() );
-	
-
+	for (l_inc = 0; l_inc < nbest; l_inc++)
+	{
+	    cerr << resultats->at(l_inc).first << "\t" << resultats->at(l_inc).second << endl;
+	}
+	cerr << "Taille résultat " << resultats->size() <<endl;
+	sort ( resultats->begin(), resultats->end() , mySortingFunction );
+	cerr << "Taille résultat Trié " << resultats->size() <<endl;
+	for (l_inc = 0; l_inc < nbest; l_inc++)
+	{
+	    cerr << resultats->at(l_inc).first << "\t" << resultats->at(l_inc).second ;
+	    found_iter=mt->find(resultats->at(l_inc).second);
+	    cerr << "\t" << (*(*found_iter).second->getToken()) << endl;
+	    cerr << "\t" << (*(*found_iter).second).toString() << endl;
+	}
+// 	return to_retrun;
+	for (l_inc = 0; l_inc < nbest; l_inc++)
+	{
+	    found_iter=mt->find(resultats->at(l_inc).second);
+	    cerr << l_inc << "\t" << resultats->at(l_inc).first << "\t"<<  resultats->at(l_inc).second << endl;
+	    string l_tok=(*(*found_iter).second->getToken());
+	    vector<float> l_f = (*(*found_iter).second->getEmbeddings());
+	    int l_id = (*found_iter).second->getKey();
+// 	    biWord l_b;
+// 	    l_b.copy((*(*found_iter).second));
+// 	    biWord b((*(*found_iter).second->getToken()), (*(*found_iter).second->getEmbeddings()), (*found_iter).second->getKey());
+// 	    b.setCscore(resultats->at(l_inc).first);
+// 	    to_retrun->push_back(b);
+// 	    cerr << b.toString() <<endl;
+// 	    resultats->at(l_inc).first;
+// 	    resultats->at(l_inc).second;
+	}
+	return to_retrun;
 }
 
 

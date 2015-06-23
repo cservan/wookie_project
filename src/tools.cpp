@@ -890,6 +890,27 @@ namespace Tools
         boost::hash<string> hasher;
         return hasher ( s );
     }
+
+    double magnitude(vector< double >* v)
+    {
+	int l_i;
+	double to_return=0;
+	for (l_i=0; l_i<(int)v->size(); l_i++)
+	{
+	    to_return = to_return + (v->at(l_i) * v->at(l_i));
+	}
+	return sqrt(to_return);
+    }
+    float magnitude(vector< float >* v)
+    {
+	int l_i;
+	double to_return=0;
+	for (l_i=0; l_i<(int)v->size(); l_i++)
+	{
+	    to_return = to_return + (v->at(l_i) * v->at(l_i));
+	}
+	return sqrt(to_return);
+    }
     double dotProduct(vector< double >* v1, vector< double >* v2)
     {
 	int l_i;
@@ -901,18 +922,7 @@ namespace Tools
 	    to_return = to_return + (v1->at(l_i) * v2->at(l_i));
 	}
 	return to_return;
-    }
-    double magnitude(vector< double >* v)
-    {
-	int l_i;
-	double to_return=0;
-	for (l_i=0; l_i<(int)v->size(); l_i++)
-	{
-	    to_return = to_return + (v->at(l_i) * v->at(l_i));
-	}
-	return sqrt(to_return);
-    }
-    double cosine(vector< double >* v1, vector< double >* v2)
+    }    double cosine(vector< double >* v1, vector< double >* v2)
     {
 	if ((int)v1->size() != (int)v2->size())
 	  return -1;
@@ -948,6 +958,53 @@ namespace Tools
 	}
 	return to_return;
     }
+    float dotProduct(vector< float >* v1, vector< float >* v2)
+    {
+	int l_i;
+	float to_return=0;
+	if ((int)v1->size() != (int)v2->size())
+	  return -1;
+	for (l_i=0; l_i<(int)v1->size(); l_i++)
+	{
+	    to_return = to_return + (v1->at(l_i) * v2->at(l_i));
+	}
+	return to_return;
+    }    float cosine(vector< float >* v1, vector< float >* v2)
+    {
+	if ((int)v1->size() != (int)v2->size())
+	  return -1;
+	float dp=dotProduct(v1,v2);
+	float m1=magnitude(v1);
+	float m2=magnitude(v2);
+	return (dp/(m1*m2));
+    }
+    float cosine(vector< float >* v1, vector< float >* v2, float m1, float m2)
+    {
+	if ((int)v1->size() != (int)v2->size())
+	  return -1;
+	float dp=dotProduct(v1,v2);
+	return (dp/(m1*m2));
+    }
+    void cosine(vector< float >* v1, vector< float >* v2, float m1, float m2, float & result)
+    {
+	if ((int)v1->size() != (int)v2->size())
+	{
+	    result = -1;
+	    return;
+	}
+	float dp=dotProduct(v1,v2);
+	result = (dp/(m1*m2));
+    }
+    vector< float > vectorStringToVectorFloat(vector< string > v)
+    {
+	vector< float > to_return;
+	int l_i;
+	for (l_i=0; l_i<(int)v.size(); l_i++)
+	{
+	    to_return.push_back((float)atof(v.at(l_i).c_str()));
+	}
+	return to_return;
+    }
     vector< string > copyVector(vector< string > v, int start, int end)
     {
 	vector< string > to_return;
@@ -973,6 +1030,20 @@ namespace Tools
 	for (l_i=start; l_i < end; l_i++)
 	{
 	    to_return.push_back((double)atof(v.at(l_i).c_str()));
+	}
+	return to_return;
+    }
+    vector< float > copyVectorFloat(vector< string > v, int start, int end)
+    {
+	vector< float > to_return;
+	int l_i;
+	if (end > (int)v.size())
+	{
+	    end = (int)v.size();
+	}
+	for (l_i=start; l_i < end; l_i++)
+	{
+	    to_return.push_back((float)atof(v.at(l_i).c_str()));
 	}
 	return to_return;
     }

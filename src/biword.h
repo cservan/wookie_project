@@ -37,20 +37,28 @@ using namespace Tools;
         private:
 	  size_t key;
 	  string * token;
-	  vector<double> * embbeddings;
-	  double magnitude;
+	  vector<float> * embbeddings;
+	  float magnitude;
+	  float cscore;
         public:
       
-	  biWord(string s, vector< double > v);
-	  biWord(string s, vector< double > v, long int id);
-// 	  biWord(string s, vector< double > v);
+	  biWord(string s, vector< float > v);
+// 	  biWord(biWord b);
+	  biWord();
+	  biWord(string s, vector< float > v, long int id);
+	  biWord(string * s, vector< float > * v, long int id);
 	  ~biWord();
 	  size_t getKey();
-	  double getMagnitude();
+	  float getMagnitude();
 	  string * getToken();
-	  vector<double> * getEmbeddings();
-	  double cosine(vector<double> * foreignEmbeddings);
-	  double cosine(biWord * foreignBiWord);
+	  vector<float> * getEmbeddings();
+	  float cosine(vector<float> * foreignEmbeddings);
+	  float cosine(biWord * foreignBiWord);
+	  void setCscore(float f);
+	  float getCscore();
+	  string toString();
+	  string shortToString();
+	  void copy(biWord b);
     };
 // }
 

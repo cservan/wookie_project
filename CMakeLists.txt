@@ -10,6 +10,9 @@ SET (CMAKE_CXX_FLAGS " -fopenmp ")
 add_definitions(-DIBPP_LINUX -DIBPP_GCC -DINSTANTIATE_TEMPLATES )
 include_directories(/home/servan/Tools/boost_1_55_0/include)
 link_directories(/home/servan/Tools/boost_1_55_0/lib)
+link_directories(/home/servan/Tools/myLibs/icu/lib)
+include_directories(/home/servan/Tools/myLibs/icu/include)
+
 
 #add definitions, compiler switches, etc.
 ADD_DEFINITIONS(-Wall -O2  -DINSTANTIATE_TEMPLATES )

@@ -40,6 +40,7 @@ class bilingualModel
 //       multimap< size_t, multimap< size_t, double  >* > * distance;
       int nthreads;
       vector< vector<float> > * d_scores;
+      int nbest;
     public:
       bilingualModel();
       bilingualModel(string FileNameMS, string FileNameMT);
@@ -47,7 +48,8 @@ class bilingualModel
       multimap< size_t, biWord*  > * getMS();
       multimap< size_t, biWord*  > * getMT();
       void subprocess(biWord* l_bi_word);
-      biWord * recherche(string s);
+      vector<biWord> * recherche(string s);
+
 };
 
 

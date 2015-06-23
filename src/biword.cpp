@@ -25,29 +25,67 @@ using namespace std;
 using namespace Tools;
 // namespace bilingualDistance
 // {
-biWord::biWord(string s, vector<double> v)
+biWord::biWord(string s, vector<float> v)
 {
     key = Tools::hashValueBoost(s);
     token = new string(s);
-    embbeddings = new vector<double>(v);
+    embbeddings = new vector<float>(v);
     magnitude = Tools::magnitude(embbeddings);
+    cscore = 0.0;
 }
-biWord::biWord(string s, vector<double> v, long int id)
+biWord::biWord(string s, vector<float> v, long int id)
 {
     key = id;
     token = new string(s);
-    embbeddings = new vector<double>(v);
+    embbeddings = new vector<float>(v);
     magnitude = Tools::magnitude(embbeddings);
+    cscore = 0.0;
 }
-double biWord::cosine(biWord* foreignBiWord)
+biWord::biWord(string * s, vector<float> * v, long int id)
+{
+    key = id;
+    token = s;
+    embbeddings = v;
+    magnitude = Tools::magnitude(embbeddings);
+    cscore = 0.0;
+}
+
+// biWord::biWord(biWord b)
+// {
+//     key = b.getKey();
+//     token = b.getToken();
+//     embbeddings = b.getEmbeddings();
+//     magnitude = b.getMagnitude();
+//     cscore = b.getCscore();
+// }
+
+biWord::biWord()
+{
+    key = -1;
+    token = new string("");
+    embbeddings = new vector<float>();
+    magnitude = -1;
+    cscore = -1;
+}
+
+void biWord::copy(biWord b)
+{
+    key = b.getKey();
+    token = b.getToken();
+    embbeddings = b.getEmbeddings();
+    magnitude = b.getMagnitude();
+    cscore = b.getCscore();
+}
+
+float biWord::cosine(biWord* foreignBiWord)
 {
     return Tools::cosine(getEmbeddings(), foreignBiWord->getEmbeddings(), getMagnitude(),foreignBiWord->getMagnitude() );
 }
-double biWord::cosine(vector< double >* foreignEmbeddings)
+float biWord::cosine(vector< float >* foreignEmbeddings)
 {
     return Tools::cosine(getEmbeddings(), foreignEmbeddings);
 }
-vector< double >* biWord::getEmbeddings()
+vector< float >* biWord::getEmbeddings()
 {
     return embbeddings;
 }
@@ -55,7 +93,7 @@ size_t biWord::getKey()
 {
     return key;
 }
-double biWord::getMagnitude()
+float biWord::getMagnitude()
 {
     return magnitude;
 }
@@ -68,6 +106,27 @@ biWord::~biWord()
     delete(token);
     delete(embbeddings);
 }
+void biWord::setCscore(float f)
+{
+    cscore = f;
+}
+float biWord::getCscore()
+{
+    return cscore;
+}
+string biWord::shortToString()
+{
+    stringstream to_return;
+    to_return << (*token) << "\t" << cscore <<endl;
+    return to_return.str();
+}
+string biWord::toString()
+{
+    stringstream to_return;
+    to_return << (*token) << "\t" << cscore << "\t" << key <<endl;
+    return to_return.str();
+}
+
 
     
   
