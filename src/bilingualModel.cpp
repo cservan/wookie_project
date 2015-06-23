@@ -305,5 +305,39 @@ vector<biWord> * bilingualModel::recherche(string s)
 	}
 	return to_retrun;
 }
+float bilingualModel::crossCosine(string s, string t)
+{
+	multimap< string, size_t  >::iterator mapS_iter = mapS->find(s);
+	multimap< string, size_t  >::iterator mapT_iter = mapT->find(t);
+	size_t src_id=-1;
+	size_t tgt_id=-1;
+	if (mapS->find(s) == mapS->end())
+	{
+	    cerr << "Attention mot non trouvé : " << s << endl;
+	    return 0.0;
+	}
+	if (mapT->find(t) == mapT->end())
+	{
+	    cerr << "Attention mot non trouvé : " << t << endl;
+	    return 0.0;
+	}
+	src_id=(*mapS_iter).second;
+	tgt_id=(*mapT_iter).second;
+	return d_scores->at(src_id).at(tgt_id);
+}
 
+void bilingualModel::oneToOneAlignment(string src, string tgt)
+{
+	vector<string> v_src = stringToVector(src," ");
+	vector<string> v_tgt = stringToVector(tgt," ");
+	int i,j;
+	for (i=0; i<(int)v_src.size(); i++)
+	{
+		cout << v_src.at(i) <<endl;
+		for (j=0; j<(int)v_tgt.size(); j++)
+		{
+		      cout << "\t\t- " << v_tgt.at(j) << "\t" << crossCosine(v_src.at(i),v_tgt.at(j)) <<endl;
+		}
+	}
+}
 

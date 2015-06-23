@@ -37,11 +37,11 @@ SET(threads_tests_SRCS
 )
 
 add_executable(bidistance ${bidistance_SRCS})
-add_executable(threads_tests ${threads_tests_SRCS})
+#add_executable(threads_tests ${threads_tests_SRCS})
 
-target_link_libraries(bidistance boost_regex boost_system boost_filesystem boost_iostreams gomp boost_thread)
-target_link_libraries(threads_tests boost_thread)
+target_link_libraries(bidistance boost_regex boost_system boost_filesystem boost_iostreams boost_thread)
+#target_link_libraries(threads_tests boost_thread)
 # target_link_libraries(wookie tercalc xmlStructure documentStructure multiEvaluation)
 # 
-install(TARGETS bidistance threads_tests DESTINATION bin)
+install(TARGETS bidistance  DESTINATION bin)
 

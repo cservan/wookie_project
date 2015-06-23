@@ -149,24 +149,25 @@ int main ( int argc, char *argv[] )
         usage();
     }
     bilingualModel l_bm(myParams.model_source, myParams.model_target);
-    string s="comptes";
-    vector< biWord>* resultats;
+//     string s="comptes";
+//     vector< biWord>* resultats;
 //     while (s.compare("EXIT") != 0)
 //     {
 // 	resultats = new vector< biWord>;
         
-	cout << "Entrez le mot à rechercher:"<<endl;
+// 	cout << "Entrez le mot à rechercher:"<<endl;
 // 	cin >> s ;
-	cout << "Nous cherchons :"<< s <<endl;
-	resultats = l_bm.recherche(s);
-	s=".";
-        resultats = l_bm.recherche(s);
-	s=",";
-        resultats = l_bm.recherche(s);
-	s="?";
-        resultats = l_bm.recherche(s);
-	s="!";
-        resultats = l_bm.recherche(s);	
+// 	cout << "Nous cherchons :"<< s <<endl;
+// 	resultats = l_bm.recherche(s);
+// 	s=".";
+//         resultats = l_bm.recherche(s);
+// 	s=",";
+//         resultats = l_bm.recherche(s);
+// 	s="?";
+//         resultats = l_bm.recherche(s);
+// 	s="!";
+//         resultats = l_bm.recherche(s);	
+	l_bm.oneToOneAlignment("Ceci est un test !","This is a test !");
 	if (s.compare("EXIT") == 0)
 	{
 	    return EXIT_SUCCESS;

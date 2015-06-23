@@ -49,6 +49,8 @@ class bilingualModel
       multimap< size_t, biWord*  > * getMT();
       void subprocess(biWord* l_bi_word);
       vector<biWord> * recherche(string s);
+      float crossCosine(string s, string t);
+      void oneToOneAlignment(string src, string tgt);
 
 };
 
