@@ -227,7 +227,7 @@ void bilingualModel::subprocess(biWord* l_bi_word)
 	while (l_iter_tgt != mt->end())
 	{
 // 	    cerr << d_scores->at(l_bi_word->getKey()).at((*l_iter_tgt).second->getKey()) << endl;
-	    Tools::cosine(l_bi_word->getEmbeddings(),(*(l_iter_tgt)).second->getEmbeddings(),  l_bi_word->getMagnitude(), (*l_iter_tgt).second->getMagnitude(), d_scores->at(l_bi_word->getKey()).at((*l_iter_tgt).second->getKey()));
+	    Tools::cosineWeighted(l_bi_word->getEmbeddings(),(*(l_iter_tgt)).second->getEmbeddings(),  l_bi_word->getMagnitude(), (*l_iter_tgt).second->getMagnitude(), d_scores->at(l_bi_word->getKey()).at((*l_iter_tgt).second->getKey()));
 // 	    l_inc_score++;
 	    l_iter_tgt++;
 	}
@@ -331,13 +331,20 @@ void bilingualModel::oneToOneAlignment(string src, string tgt)
 	vector<string> v_src = stringToVector(src," ");
 	vector<string> v_tgt = stringToVector(tgt," ");
 	int i,j;
+	float l_norm = 0.0;
 	for (i=0; i<(int)v_src.size(); i++)
 	{
 		cout << v_src.at(i) <<endl;
+		l_norm = 0.0 ;
 		for (j=0; j<(int)v_tgt.size(); j++)
 		{
-		      cout << "\t\t- " << v_tgt.at(j) << "\t" << crossCosine(v_src.at(i),v_tgt.at(j)) <<endl;
+		      //cout << "\t\t- " << v_tgt.at(j) << "\t" << crossCosine(v_src.at(i),v_tgt.at(j)) <<endl;
+		      l_norm = l_norm + crossCosine(v_src.at(i),v_tgt.at(j)); 
 		}
+		for (j=0; j<(int)v_tgt.size(); j++)
+                {
+                      cout << "\t\t- " << v_tgt.at(j) << "\t" << crossCosine(v_src.at(i),v_tgt.at(j)) << "\t" << crossCosine(v_src.at(i),v_tgt.at(j))/l_norm<<endl;
+                }
 	}
 }
 

@@ -117,16 +117,20 @@ struct param
     string printParams(param p);
     string join ( string delim, vector<string> arr );
     double dotProduct(vector<double> * v1 , vector< double> * v2);
+    double dotProduct(vector<double> * v1 , vector< double> * v2, double m1, double m2);
     double cosine(vector<double> * v1 , vector< double> * v2);
     double cosine(vector<double> * v1 , vector< double> * v2);
     double cosine(vector<double> * v1 , vector< double> * v2, double m1, double m2);
     void cosine(vector<double> * v1 , vector< double> * v2, double m1, double m2, float & result);
+    void cosineWeighted(vector<double> * v1 , vector< double> * v2, double m1, double m2, float & result);
 
     float dotProduct(vector<float> * v1 , vector< float> * v2);
+    float dotProduct(vector<float> * v1 , vector<float> * v2, float m1, float m2);
     float cosine(vector<float> * v1 , vector< float> * v2);
     float cosine(vector<float> * v1 , vector< float> * v2);
     float cosine(vector<float> * v1 , vector< float> * v2, float m1, float m2);
     void cosine(vector<float> * v1 , vector< float> * v2, float m1, float m2, float & result);
+    void cosineWeighted(vector<float> * v1 , vector<float> * v2, float m1, float m2, float & result);
 
     double magnitude(vector<double> * v);
     float magnitude(vector<float> * v);

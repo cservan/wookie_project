@@ -969,7 +969,8 @@ namespace Tools
 	    to_return = to_return + (v1->at(l_i) * v2->at(l_i));
 	}
 	return to_return;
-    }    float cosine(vector< float >* v1, vector< float >* v2)
+    }    
+    float cosine(vector< float >* v1, vector< float >* v2)
     {
 	if ((int)v1->size() != (int)v2->size())
 	  return -1;
@@ -978,6 +979,27 @@ namespace Tools
 	float m2=magnitude(v2);
 	return (dp/(m1*m2));
     }
+    float dotProductWeighted(vector< float >* v1, vector< float >* v2, float m1, float m2)
+    {
+        int l_i;
+        float to_return=0;
+	float w1 = 1.0;
+	if (m2 > m1)
+	{
+		w1=m1/m2;
+	}
+	else
+	{
+		w1=m2/m1;
+	}
+        if ((int)v1->size() != (int)v2->size())
+          return -1;
+        for (l_i=0; l_i<(int)v1->size(); l_i++)
+        {
+            to_return = to_return + (v1->at(l_i) * (v2->at(l_i)));
+        }
+        return w1 * to_return;
+    }    
     float cosine(vector< float >* v1, vector< float >* v2, float m1, float m2)
     {
 	if ((int)v1->size() != (int)v2->size())
@@ -994,6 +1016,16 @@ namespace Tools
 	}
 	float dp=dotProduct(v1,v2);
 	result = (dp/(m1*m2));
+    }
+    void cosineWeighted(vector< float >* v1, vector< float >* v2, float m1, float m2, float & result)
+    {
+        if ((int)v1->size() != (int)v2->size())
+        {
+            result = -1;
+            return;
+        }
+        float dp=dotProductWeighted(v1,v2,m1,m2);
+        result = (dp/(m1*m2));
     }
     vector< float > vectorStringToVectorFloat(vector< string > v)
     {

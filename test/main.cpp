@@ -167,11 +167,11 @@ int main ( int argc, char *argv[] )
 //         resultats = l_bm.recherche(s);
 // 	s="!";
 //         resultats = l_bm.recherche(s);	
-	l_bm.oneToOneAlignment("Ceci est un test !","This is a test !");
-	if (s.compare("EXIT") == 0)
-	{
-	    return EXIT_SUCCESS;
-	}
+	l_bm.oneToOneAlignment("ceci est un test !","this is a test !");
+//	if (s.compare("EXIT") == 0)
+//	{
+//	    return EXIT_SUCCESS;
+//	}
 //	int i;
 	/*for (i = 0 ; i < (int)resultats->size(); i++)
 	{
