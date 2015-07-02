@@ -834,6 +834,8 @@ namespace Tools
 	to_return.delCost=p.delCost;
 	to_return.subCost=p.subCost;
 	to_return.shiftCost=p.shiftCost;
+	to_return.threads=p.threads;
+	to_return.threshold=p.threshold;
         return to_return;
     }
     string printParams ( param p )
@@ -860,6 +862,8 @@ namespace Tools
         s << "delCost = " << p.delCost << endl;
         s << "subCost = " << p.subCost << endl;
         s << "shiftCost = " << p.shiftCost << endl;
+        s << "threads = " << p.threads << endl;
+        s << "threshold = " << p.threshold << endl;
         return s.str();
 
     }
@@ -1026,6 +1030,15 @@ namespace Tools
         }
         float dp=dotProductWeighted(v1,v2,m1,m2);
         result = (dp/(m1*m2));
+    }
+    float cosineWeighted(vector< float >* v1, vector< float >* v2, float m1, float m2)
+    {
+        if ((int)v1->size() != (int)v2->size())
+        {
+            return 0.0;
+        }
+        float dp=dotProductWeighted(v1,v2,m1,m2);
+        return (dp/(m1*m2));
     }
     vector< float > vectorStringToVectorFloat(vector< string > v)
     {

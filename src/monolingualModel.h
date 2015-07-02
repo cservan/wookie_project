@@ -26,6 +26,7 @@
 #include "biword.h"
 #include "alignmentData.h"
 #include <boost/numeric/ublas/matrix_sparse.hpp>
+#include <boost/thread/mutex.hpp> 
 
 namespace ublas = boost::numeric::ublas;
 
@@ -38,17 +39,19 @@ class monolingualModel
     private:
       multimap< size_t, biWord*  > * ms;
       multimap< string, size_t  > * mapS;
+      boost::mutex m_mutex;
+      float m_threshold;
 //       multimap< size_t, multimap< size_t, double  >* > * distance;
-      int nthreads;
-      ublas::compressed_matrix<float> * d_scores;
-//       vector< vector<float> > * d_scores;
+      int m_nthreads;
+      ublas::compressed_matrix<float> * sparse_d_scores;
+      vector< vector<float> > * d_scores;
       int m_nbest;
     public:
       monolingualModel();
-      monolingualModel(string FileNameMS);
+      monolingualModel(string FileNameMS, int nb_threads, float limit_threshold);
       ~monolingualModel();
       multimap< size_t, biWord*  > * getMS();
-      void subprocess(biWord* l_bi_word);
+      void subprocess(biWord* l_bi_word, int l_thread_nbr);
       vector<biWord> * recherche(string s);
       vector<biWord> * recherche(string s, int nbest);
       float crossCosine(string s, string t);

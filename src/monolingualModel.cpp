@@ -34,7 +34,8 @@ using namespace Tools;
 monolingualModel::monolingualModel()
 {
       ms = new multimap< size_t, biWord* >();
-      nthreads = 4;
+      m_nthreads = 12;
+      m_threshold = 0.4;
 }
 multimap< size_t, biWord* >* monolingualModel::getMS()
 {
@@ -44,11 +45,12 @@ monolingualModel::~monolingualModel()
 {
     delete(ms);
 }
-monolingualModel::monolingualModel(string FileNameMS)
+monolingualModel::monolingualModel(string FileNameMS, int nb_threads, float limit_threshold)
 {
     ms = new multimap< size_t, biWord* >();
     mapS = new multimap< string, size_t >();
-    nthreads = 4;
+    m_nthreads = nb_threads;
+    m_threshold = limit_threshold;
     ifstream fichierMS; 
     fichierMS.open( FileNameMS.c_str());
     string line="";
@@ -101,24 +103,29 @@ monolingualModel::monolingualModel(string FileNameMS)
     l_cpt=0;
     boost::thread_group * group;
     vector<boost::thread*> g_threads;
-    d_scores = new ublas::compressed_matrix<float> (vocab_size_src,vocab_size_src);
-//     vector<float> v (vocab_size_src + 1,0.0);
-//     for (l_cpt=0; l_cpt < vocab_size_src +1 ; l_cpt++)
-//     {
-// 	d_scores->push_back(v);
-// 	if ((l_cpt % (vocab_size_src/100)) == 0) 
-// 	{
-// 	    cerr <<".";
-// 	}
-//     }
+    sparse_d_scores = new ublas::compressed_matrix<float> (vocab_size_src,vocab_size_src);
+    d_scores = new vector< vector<float> >();
+    vector<float> v (vocab_size_src + 1,0.0);
+    for (l_cpt=0; l_cpt < m_nthreads ; l_cpt++)
+    {
+	d_scores->push_back(v);
+	if ((l_cpt % (vocab_size_src/100)) == 0) 
+	{
+	    cerr <<".";
+	}
+    }
     int l_inc_score=0;
     cerr << ".OK" <<endl;
     boost::thread *t;
     group = new boost::thread_group();
+    int cpt_threads=0;
+    l_cpt=0;
+    int l_inc_i,l_inc_j;
     while (l_iter_src != ms->end())
     {
 	l_cpt++;
-	t = new boost::thread(boost::bind(&monolingualModel::subprocess,this,(*l_iter_src).second));
+	t = new boost::thread(boost::bind(&monolingualModel::subprocess,this,(*l_iter_src).second,cpt_threads));
+	cpt_threads++;
 // 	t = new boost::thread(monolingualModel subprocess,(*l_iter_src).second));
 // 	multimap< size_t, float  >* l_multimap = new multimap< size_t, float  >();
 // 	multimap< size_t, biWord* >::iterator l_iter_tgt;
@@ -128,11 +135,22 @@ monolingualModel::monolingualModel(string FileNameMS)
 // 	subprocess((*l_iter_src).second);
 // 	    Tools::cosine((*(l_iter_src)).second->getEmbeddings(),(*(l_iter_tgt)).second->getEmbeddings(),  (*l_iter_src).second->getMagnitude(), (*l_iter_tgt).second->getMagnitude(), d_scores->at(l_inc_score));
 	group->add_thread(t);
-	if (l_cpt % 20 == 0)
+	if (l_cpt % m_nthreads == 0)
 	{
 // 		cerr<< ".";
 	    group->join_all();
-	    int l_inc;
+	    for (l_inc_i=0; l_inc_i < cpt_threads ; l_inc_i ++)
+	    {
+// 		cerr << l_inc_i << "\t" << l_cpt-cpt_threads+l_inc_i << "\t" << cpt_threads << endl;
+		for (l_inc_j=0; l_inc_j < (int)d_scores->at(l_inc_i).size() ; l_inc_j++)
+		{
+		    if (d_scores->at(l_inc_i).at(l_inc_j) > m_threshold)
+		    {
+			sparse_d_scores->insert_element(l_cpt-cpt_threads+l_inc_i,l_inc_j,d_scores->at(l_inc_i).at(l_inc_j));
+		    }
+		}
+	    }
+	    cpt_threads=0;
 	    delete(group);
 	    group = new boost::thread_group();
 //     	    exit(0);
@@ -149,6 +167,18 @@ monolingualModel::monolingualModel(string FileNameMS)
 	}
     }
     group->join_all();
+    delete(group);
+    for (l_inc_i=0; l_inc_i < cpt_threads ; l_inc_i ++)
+    {
+// 	cerr << l_inc_i << "\t" << l_cpt-cpt_threads+l_inc_i << "\t" << cpt_threads << endl;
+	for (l_inc_j=0; l_inc_j < (int)d_scores->at(l_inc_i).size() ; l_inc_j++)
+	{
+	    if (d_scores->at(l_inc_i).at(l_inc_j) > m_threshold)
+	    {
+		sparse_d_scores->insert_element(l_cpt-cpt_threads+l_inc_i,l_inc_j,d_scores->at(l_inc_i).at(l_inc_j));
+	    }
+	}
+    }
 //     return;
 //     while (l_iter_src != ms->end())
 //     {
@@ -174,23 +204,50 @@ monolingualModel::monolingualModel(string FileNameMS)
 //     }
 
     cerr <<".OK!"<<endl;
-    
+//     cerr << "Populating Sparse Matrix" << endl;
+//     int l_inc_i, l_inc_j;
+//     for (l_inc_i=0; l_inc_i < vocab_size_src +1 ; l_inc_i ++)
+//     {
+// 	for (l_inc_j=0; l_inc_j < (int)d_scores->at(l_inc_i).size() ; l_inc_j++)
+// 	{
+// 	    if (d_scores->at(l_inc_i).at(l_inc_j) > m_threshold)
+// 	    {
+// 		sparse_d_scores->insert_element(l_inc_i,l_inc_j,d_scores->at(l_inc_i).at(l_inc_j));
+// 	    }
+// 	}
+// 	d_scores->at(l_inc_i).clear();
+// 	if ((l_inc_i % (vocab_size_src/100)) == 0) 
+// 	{
+// 	    cerr <<".";
+// 	}
+//     }
+//     cerr <<".OK!"<<endl;
+    delete(d_scores);
+//     cerr <<"Delete d_scores!"<<endl;
+//     sleep(10);
 
 }
 
-void monolingualModel::subprocess(biWord* l_bi_word)
+void monolingualModel::subprocess(biWord* l_bi_word,int l_thread_nbr)
 {
 // 	vector<float> * v_scores = new vector<float> ((int)ms->size()+1,0.0);
 	multimap< size_t, biWord* >::iterator l_iter_src;
 // 	long long int l_inc_score=0;
 	l_iter_src=ms->begin();
+	float l_score = 0.0;
 	while (l_iter_src != ms->end())
 	{
-	    if ((*(l_iter_src)).second->getKey() >= l_bi_word->getKey())
-	    {
-// 	    cerr << d_scores->at(l_bi_word->getKey()).at((*l_iter_tgt).second->getKey()) << endl;
-		Tools::cosineWeighted(l_bi_word->getEmbeddings(),(*(l_iter_src)).second->getEmbeddings(),  l_bi_word->getMagnitude(), (*l_iter_src).second->getMagnitude(), d_scores((l_bi_word->getKey()),((*l_iter_src).second->getKey())));
-	    }
+	    Tools::cosineWeighted(l_bi_word->getEmbeddings(),(*(l_iter_src)).second->getEmbeddings(),  l_bi_word->getMagnitude(), (*l_iter_src).second->getMagnitude(),d_scores->at(l_thread_nbr).at((*l_iter_src).second->getKey()));
+// 	    if (l_score > m_threshold)
+// 	    {
+// 		if ((*(l_iter_src)).second->getKey() >= l_bi_word->getKey())
+// 		{
+//     // 	    cerr << d_scores->at(l_bi_word->getKey()).at((*l_iter_tgt).second->getKey()) << endl;
+// // 		  m_mutex.lock();
+// 		  d_scores->at((l_bi_word->getKey())).at((*l_iter_src).second->getKey()) = l_score; 
+// // 		  m_mutex.unlock();
+// 		}
+// 	    }
 // 	    l_inc_score++;
 	    l_iter_src++;
 	}
@@ -227,36 +284,52 @@ vector<biWord> * monolingualModel::recherche(string s)
 // 	cerr << d_scores->at(src_id).size() << endl;
 	for (l_inc = 0; l_inc < (int)mapS->size(); l_inc++)
 	{
-	    p.first = d_scores(src_id,l_inc);
-	    if (p.first == 0.0)
+	    float * l_score = sparse_d_scores->find_element(src_id,l_inc);
+	    if ( l_score != NULL)
 	    {
-		p.first = d_scores(l_inc,src_id);
+		p.first = (*l_score);
+	    }
+	    else
+	    {
+		l_score = sparse_d_scores->find_element(l_inc, src_id);
+		if ( l_score != NULL)
+		{
+		    p.first = (*l_score);
+		}
+		else
+		{
+		    p.first = 0.0;
+		}
 	    }
 	    p.second = l_inc;
-	    resultats->push_back(p);
-// 	    cerr << l_inc << "\t" << d_scores->at(src_id).at(l_inc) << endl;
-	}
-	for (l_inc = 0; l_inc < m_nbest; l_inc++)
-	{
-	    cerr << resultats->at(l_inc).first << "\t" << resultats->at(l_inc).second << endl;
+	    if ( p.first > 0.0 )
+	    {
+		resultats->push_back(p);
+	    }
+// 	    resultats->push_back(p);
 	}
 	cerr << "Taille résultat " << resultats->size() <<endl;
 	sort ( resultats->begin(), resultats->end() , mySortingFunctionMono );
 	cerr << "Taille résultat Trié " << resultats->size() <<endl;
-	for (l_inc = 0; l_inc < m_nbest; l_inc++)
+// 	for (l_inc = 0; l_inc < m_nbest && l_inc < (int)resultats->size(); l_inc++)
+// 	{
+// 	    cerr << resultats->at(l_inc).first << "\t" << resultats->at(l_inc).second << endl;
+// 	}
+	for (l_inc = 0; l_inc < m_nbest && l_inc < (int)resultats->size(); l_inc++)
 	{
 	    cerr << resultats->at(l_inc).first << "\t" << resultats->at(l_inc).second ;
 	    found_iter=ms->find(resultats->at(l_inc).second);
-	    cerr << "\t" << (*(*found_iter).second->getToken()) << endl;
+	    cerr << "\t" << (*(*found_iter).second->getToken());
 	    cerr << "\t" << (*(*found_iter).second).toString() << endl;
 	}
+	return to_retrun;
 // 	return to_retrun;
-	for (l_inc = 0; l_inc < m_nbest; l_inc++)
-	{
-	    found_iter=ms->find(resultats->at(l_inc).second);
-	    cerr << l_inc << "\t" << resultats->at(l_inc).first << "\t"<<  resultats->at(l_inc).second << endl;
-	    string l_tok=(*(*found_iter).second->getToken());
-	    vector<float> l_f = (*(*found_iter).second->getEmbeddings());
+// 	for (l_inc = 0; l_inc < m_nbest && l_inc < (int)resultats->size(); l_inc++)
+// 	{
+// 	    found_iter=ms->find(resultats->at(l_inc).second);
+// 	    cerr << l_inc << "\t" << resultats->at(l_inc).first << "\t"<<  resultats->at(l_inc).second << endl;
+// 	    string l_tok=(*(*found_iter).second->getToken());
+// 	    vector<float> l_f = (*(*found_iter).second->getEmbeddings());
 // 	    int l_id = (*found_iter).second->getKey();
 // 	    biWord l_b;
 // 	    l_b.copy((*(*found_iter).second));
@@ -266,7 +339,7 @@ vector<biWord> * monolingualModel::recherche(string s)
 // 	    cerr << b.toString() <<endl;
 // 	    resultats->at(l_inc).first;
 // 	    resultats->at(l_inc).second;
-	}
+// 	}
 	return to_retrun;
 }
 vector<biWord> * monolingualModel::recherche(string s, int nbest)
@@ -286,17 +359,32 @@ vector<biWord> * monolingualModel::recherche(string s, int nbest)
 	int l_inc;
 	pair <float, int > p(0.0,-1);
 	
-	cerr << d_scores->nnz() << endl;
+	cerr << sparse_d_scores->nnz() << endl;
 // 	cerr << d_scores->at(src_id).size() << endl;
 	for (l_inc = 0; l_inc < (int)mapS->size(); l_inc++)
 	{
-	    p.first = d_scores(src_id,l_inc);
-	    if (p.first == 0.0)
+	    float * l_score = sparse_d_scores->find_element(src_id,l_inc);
+	    if ( l_score != NULL)
 	    {
-		p.first = d_scores(l_inc,src_id);
+		p.first = (*l_score);
+	    }
+	    else
+	    {
+		l_score = sparse_d_scores->find_element(l_inc, src_id);
+		if ( l_score != NULL)
+		{
+		    p.first = (*l_score);
+		}
+		else
+		{
+		    p.first = 0.0;
+		}
 	    }
 	    p.second = l_inc;
-	    resultats->push_back(p);
+	    if ( p.first > 0.0 )
+	    {
+		resultats->push_back(p);
+	    }
 // 	    cerr << l_inc << "\t" << d_scores->at(src_id).at(l_inc) << endl;
 	}
 	for (l_inc = 0; l_inc < nbest; l_inc++)
@@ -351,8 +439,8 @@ float monolingualModel::crossCosine(string s, string t)
 	src_id=(*mapS_iter).second;
 	tgt_id=(*mapT_iter).second;
 	if ( src_id > tgt_id )
-	  return (float)d_scores(tgt_id,src_id);
-	return (float)d_scores(src_id,tgt_id);
+	  return (*sparse_d_scores->find_element(tgt_id,src_id));
+	return (*sparse_d_scores->find_element(src_id,tgt_id));
 }
 
 void monolingualModel::oneToOneAlignment(string src, string tgt)

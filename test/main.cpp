@@ -71,6 +71,8 @@ void readCommandLineArguments ( unsigned int argc, char *argv[] , param & p)
     p.count_verbose=false;
     p.printAlignments = false;
     p.printAlignmentsTrack = false;
+    p.threads = 24;
+    p.threshold = 0.5;
     p.WER=false;
     p.model_source="";     // path to the resources
     p.model_target="";     // path to the configuration files
@@ -109,6 +111,14 @@ void readCommandLineArguments ( unsigned int argc, char *argv[] , param & p)
         else if ( s.compare ( "-mt" ) == 0 )
         {
             p.model_target = infos;
+        }
+        else if ( s.compare ( "-t" ) == 0 )
+        {
+            p.threads = atoi(infos.c_str());
+        }
+        else if ( s.compare ( "-th" ) == 0 )
+        {
+            p.threshold = atof(infos.c_str());
         }
         else if ( s.compare ( "--debugMode" ) == 0 )
         {
@@ -149,7 +159,7 @@ int main ( int argc, char *argv[] )
         cerr << "ERROR : main : models file are not set !" << endl;
         usage();
     }
-    monolingualModel l_bm(myParams.model_source);
+    monolingualModel l_bm(myParams.model_source, myParams.threads, myParams.threshold);
     string s="comptes";
     vector< biWord>* resultats;
 //     while (s.compare("EXIT") != 0)
@@ -161,12 +171,16 @@ int main ( int argc, char *argv[] )
 	cout << "Nous cherchons :"<< s <<endl;
 	resultats = l_bm.recherche(s);
 	s=".";
+	cout << "Nous cherchons :"<< s <<endl;
         resultats = l_bm.recherche(s);
 	s=",";
+	cout << "Nous cherchons :"<< s <<endl;
         resultats = l_bm.recherche(s);
 	s="?";
+	cout << "Nous cherchons :"<< s <<endl;
         resultats = l_bm.recherche(s);
 	s="!";
+	cout << "Nous cherchons :"<< s <<endl;
         resultats = l_bm.recherche(s);	
 // 	l_bm.oneToOneAlignment("ceci est un test !","this is a test !");
 // 	cerr << "Deuxieme recherche:"<<endl;

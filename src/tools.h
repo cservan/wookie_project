@@ -72,6 +72,8 @@ struct param
     float insCost;
     float subCost;
     float shiftCost;
+    int threads;
+    float threshold;
 };
 // param = { false, "","","","" };
 
@@ -131,6 +133,7 @@ struct param
     float cosine(vector<float> * v1 , vector< float> * v2, float m1, float m2);
     void cosine(vector<float> * v1 , vector< float> * v2, float m1, float m2, float & result);
     void cosineWeighted(vector<float> * v1 , vector<float> * v2, float m1, float m2, float & result);
+    float cosineWeighted(vector<float> * v1 , vector<float> * v2, float m1, float m2);
 
     double magnitude(vector<double> * v);
     float magnitude(vector<float> * v);
