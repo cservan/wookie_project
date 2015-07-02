@@ -99,7 +99,7 @@ monolingualModel::monolingualModel(string FileNameMS)
     float l_score = 0.0;
     l_iter_src=ms->begin();
     l_cpt=0;
-    boost::thread_group group;
+    boost::thread_group * group;
     vector<boost::thread*> g_threads;
     d_scores = new vector < vector<float> >;
     vector<float> v (vocab_size_src + 1,0.0);
@@ -114,6 +114,7 @@ monolingualModel::monolingualModel(string FileNameMS)
     int l_inc_score=0;
     cerr << ".OK" <<endl;
     boost::thread *t;
+    group = new boost::thread_group();
     while (l_iter_src != ms->end())
     {
 	l_cpt++;
@@ -126,11 +127,14 @@ monolingualModel::monolingualModel(string FileNameMS)
 // 	    t = new boost::thread(&
 // 	subprocess((*l_iter_src).second);
 // 	    Tools::cosine((*(l_iter_src)).second->getEmbeddings(),(*(l_iter_tgt)).second->getEmbeddings(),  (*l_iter_src).second->getMagnitude(), (*l_iter_tgt).second->getMagnitude(), d_scores->at(l_inc_score));
-	group.add_thread(t);
+	group->add_thread(t);
 	if (l_cpt % 20 == 0)
 	{
 // 		cerr<< ".";
-	    group.join_all();
+	    group->join_all();
+	    int l_inc;
+	    delete(group);
+	    group = new boost::thread_group();
 //     	    exit(0);
 	}
 // 	group.join_all();
