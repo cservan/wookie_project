@@ -29,6 +29,7 @@ SET(bidistance_SRCS
    ${CMAKE_SOURCE_DIR}/src/tools.cpp
    ${CMAKE_SOURCE_DIR}/src/biword.cpp
    ${CMAKE_SOURCE_DIR}/src/bilingualModel.cpp
+   ${CMAKE_SOURCE_DIR}/src/monolingualModel.cpp
    ${CMAKE_SOURCE_DIR}/src/alignmentData.cpp
 )
 

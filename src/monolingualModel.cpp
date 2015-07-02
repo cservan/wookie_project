@@ -34,50 +34,34 @@ using namespace Tools;
 monolingualModel::monolingualModel()
 {
       ms = new multimap< size_t, biWord* >();
-      mt = new multimap< size_t, biWord* >();
       nthreads = 4;
 }
 multimap< size_t, biWord* >* monolingualModel::getMS()
 {
     return ms;
 }
-multimap< size_t, biWord* >* monolingualModel::getMT()
-{
-    return mt;
-}
 monolingualModel::~monolingualModel()
 {
     delete(ms);
-    delete(mt);
 }
-monolingualModel::monolingualModel(string FileNameMS, string FileNameMT)
+monolingualModel::monolingualModel(string FileNameMS)
 {
     ms = new multimap< size_t, biWord* >();
-    mt = new multimap< size_t, biWord* >();
     mapS = new multimap< string, size_t >();
-    mapT = new multimap< string, size_t >();
     nthreads = 4;
     ifstream fichierMS; 
     fichierMS.open( FileNameMS.c_str());
-    ifstream fichierMT; 
-    fichierMT.open( FileNameMT.c_str());
     string line="";
     vector<int> l_data;
     vector<string> l_data_str;
     int vocab_size_src=0;
     int vector_size=0;
-    int vocab_size_tgt=0;
     biWord * l_biWord;
     int l_cpt=0;
-    nbest=10;
+    m_nbest=10;
     if (! fichierMS)
     {
 	cerr << "Error while opening " << FileNameMS <<endl;
-	exit(1);
-    }
-    if (! fichierMT)
-    {
-	cerr << "Error while opening " << FileNameMT <<endl;
 	exit(1);
     }
     getline ( fichierMS, line );
@@ -110,43 +94,15 @@ monolingualModel::monolingualModel(string FileNameMS, string FileNameMT)
     }
     cerr <<".OK!"<<endl;
     l_cpt=0;
-    getline ( fichierMT, line );
-    l_data=stringToVectorInt(line," ");
-    if ((int)l_data.size() < 2)
-    {
-	cerr << "Error while extracting data: " << FileNameMT <<endl;
-	exit(1);
-    }
-    vocab_size_tgt=l_data.at(0);
-    vector_size=l_data.at(1);
-    cerr << vocab_size_tgt << "\t" << vector_size << endl;
-    while (getline ( fichierMT, line ))
-    {
-	l_data_str=stringToVector(line," ");
-	l_biWord = new biWord(l_data_str.at(0), copyVectorFloat(l_data_str,1,vector_size + 1), l_cpt);
-	p = new pair<size_t, biWord*>(l_biWord->getKey(),l_biWord);
-	mt->insert((*p));
-	p_bis = new pair<string, size_t>((*l_biWord->getToken()),l_biWord->getKey());
-	mapT->insert((*p_bis));
-	l_cpt++;
-	if ((l_cpt % (vocab_size_tgt/100)) == 0) 
-	{
-	    cerr <<".";
-	}
-	delete(p);
-	delete(p_bis);
-    }
-    cerr <<".OK!"<<endl;
 //     distance = new multimap< size_t, multimap< size_t, float  >* > ();
     multimap< size_t, biWord* >::iterator l_iter_src;
-    multimap< size_t, biWord* >::iterator l_iter_tgt;
     float l_score = 0.0;
     l_iter_src=ms->begin();
     l_cpt=0;
     boost::thread_group group;
     vector<boost::thread*> g_threads;
     d_scores = new vector < vector<float> >;
-    vector<float> v (vocab_size_tgt + 1,0.0);
+    vector<float> v (vocab_size_src + 1,0.0);
     for (l_cpt=0; l_cpt < vocab_size_src +1 ; l_cpt++)
     {
 	d_scores->push_back(v);
@@ -221,22 +177,19 @@ monolingualModel::monolingualModel(string FileNameMS, string FileNameMT)
 void monolingualModel::subprocess(biWord* l_bi_word)
 {
 // 	vector<float> * v_scores = new vector<float> ((int)ms->size()+1,0.0);
-	multimap< size_t, biWord* >::iterator l_iter_tgt;
+	multimap< size_t, biWord* >::iterator l_iter_src;
 // 	long long int l_inc_score=0;
-	l_iter_tgt=mt->begin();
-	while (l_iter_tgt != mt->end())
+	l_iter_src=ms->begin();
+	while (l_iter_src != ms->end())
 	{
 // 	    cerr << d_scores->at(l_bi_word->getKey()).at((*l_iter_tgt).second->getKey()) << endl;
-	    Tools::cosineWeighted(l_bi_word->getEmbeddings(),(*(l_iter_tgt)).second->getEmbeddings(),  l_bi_word->getMagnitude(), (*l_iter_tgt).second->getMagnitude(), d_scores->at(l_bi_word->getKey()).at((*l_iter_tgt).second->getKey()));
+	    Tools::cosineWeighted(l_bi_word->getEmbeddings(),(*(l_iter_src)).second->getEmbeddings(),  l_bi_word->getMagnitude(), (*l_iter_src).second->getMagnitude(), d_scores->at(l_bi_word->getKey()).at((*l_iter_src).second->getKey()));
 // 	    l_inc_score++;
-	    l_iter_tgt++;
+	    l_iter_src++;
 	}
-	
-	  
-
 }
 
-bool mySortingFunction ( const pair<float, int>& i, const pair<float, int>& j )
+bool mySortingFunctionMono ( const pair<float, int>& i, const pair<float, int>& j )
 {
     if ( i.first > j.first ) return true;
     else return false;
@@ -272,28 +225,87 @@ vector<biWord> * monolingualModel::recherche(string s)
 	    resultats->push_back(p);
 // 	    cerr << l_inc << "\t" << d_scores->at(src_id).at(l_inc) << endl;
 	}
+	for (l_inc = 0; l_inc < m_nbest; l_inc++)
+	{
+	    cerr << resultats->at(l_inc).first << "\t" << resultats->at(l_inc).second << endl;
+	}
+	cerr << "Taille résultat " << resultats->size() <<endl;
+	sort ( resultats->begin(), resultats->end() , mySortingFunctionMono );
+	cerr << "Taille résultat Trié " << resultats->size() <<endl;
+	for (l_inc = 0; l_inc < m_nbest; l_inc++)
+	{
+	    cerr << resultats->at(l_inc).first << "\t" << resultats->at(l_inc).second ;
+	    found_iter=ms->find(resultats->at(l_inc).second);
+	    cerr << "\t" << (*(*found_iter).second->getToken()) << endl;
+	    cerr << "\t" << (*(*found_iter).second).toString() << endl;
+	}
+// 	return to_retrun;
+	for (l_inc = 0; l_inc < m_nbest; l_inc++)
+	{
+	    found_iter=ms->find(resultats->at(l_inc).second);
+	    cerr << l_inc << "\t" << resultats->at(l_inc).first << "\t"<<  resultats->at(l_inc).second << endl;
+	    string l_tok=(*(*found_iter).second->getToken());
+	    vector<float> l_f = (*(*found_iter).second->getEmbeddings());
+// 	    int l_id = (*found_iter).second->getKey();
+// 	    biWord l_b;
+// 	    l_b.copy((*(*found_iter).second));
+// 	    biWord b((*(*found_iter).second->getToken()), (*(*found_iter).second->getEmbeddings()), (*found_iter).second->getKey());
+// 	    b.setCscore(resultats->at(l_inc).first);
+// 	    to_retrun->push_back(b);
+// 	    cerr << b.toString() <<endl;
+// 	    resultats->at(l_inc).first;
+// 	    resultats->at(l_inc).second;
+	}
+	return to_retrun;
+}
+vector<biWord> * monolingualModel::recherche(string s, int nbest)
+{
+	size_t src_id=-1;
+	vector<biWord> * to_retrun = new vector< biWord >;
+// 	to_retrun = new biWord();
+	multimap< string, size_t  >::iterator mapS_iter = mapS->find(s);
+	multimap< size_t , biWord* >::iterator found_iter ;
+	if (mapS->find(s) == mapS->end())
+	{
+	    cerr << "Attention mot non trouvé : " << s << endl;
+	    return NULL;
+	}
+	src_id=(*mapS_iter).second;
+	vector< pair <float, int > > * resultats = new vector< pair <float, int > >();
+	int l_inc;
+	pair <float, int > p(0.0,-1);
+	
+	cerr << d_scores->size() << endl;
+	cerr << d_scores->at(src_id).size() << endl;
+	for (l_inc = 0; l_inc < (int)d_scores->at(src_id).size(); l_inc++)
+	{
+	    p.first = d_scores->at(src_id).at(l_inc);
+	    p.second = l_inc;
+	    resultats->push_back(p);
+// 	    cerr << l_inc << "\t" << d_scores->at(src_id).at(l_inc) << endl;
+	}
 	for (l_inc = 0; l_inc < nbest; l_inc++)
 	{
 	    cerr << resultats->at(l_inc).first << "\t" << resultats->at(l_inc).second << endl;
 	}
 	cerr << "Taille résultat " << resultats->size() <<endl;
-	sort ( resultats->begin(), resultats->end() , mySortingFunction );
+	sort ( resultats->begin(), resultats->end() , mySortingFunctionMono );
 	cerr << "Taille résultat Trié " << resultats->size() <<endl;
 	for (l_inc = 0; l_inc < nbest; l_inc++)
 	{
 	    cerr << resultats->at(l_inc).first << "\t" << resultats->at(l_inc).second ;
-	    found_iter=mt->find(resultats->at(l_inc).second);
+	    found_iter=ms->find(resultats->at(l_inc).second);
 	    cerr << "\t" << (*(*found_iter).second->getToken()) << endl;
 	    cerr << "\t" << (*(*found_iter).second).toString() << endl;
 	}
 // 	return to_retrun;
 	for (l_inc = 0; l_inc < nbest; l_inc++)
 	{
-	    found_iter=mt->find(resultats->at(l_inc).second);
+	    found_iter=ms->find(resultats->at(l_inc).second);
 	    cerr << l_inc << "\t" << resultats->at(l_inc).first << "\t"<<  resultats->at(l_inc).second << endl;
 	    string l_tok=(*(*found_iter).second->getToken());
 	    vector<float> l_f = (*(*found_iter).second->getEmbeddings());
-	    int l_id = (*found_iter).second->getKey();
+// 	    int l_id = (*found_iter).second->getKey();
 // 	    biWord l_b;
 // 	    l_b.copy((*(*found_iter).second));
 // 	    biWord b((*(*found_iter).second->getToken()), (*(*found_iter).second->getEmbeddings()), (*found_iter).second->getKey());
@@ -308,7 +320,7 @@ vector<biWord> * monolingualModel::recherche(string s)
 float monolingualModel::crossCosine(string s, string t)
 {
 	multimap< string, size_t  >::iterator mapS_iter = mapS->find(s);
-	multimap< string, size_t  >::iterator mapT_iter = mapT->find(t);
+	multimap< string, size_t  >::iterator mapT_iter = mapS->find(t);
 	size_t src_id=-1;
 	size_t tgt_id=-1;
 	if (mapS->find(s) == mapS->end())
@@ -316,7 +328,7 @@ float monolingualModel::crossCosine(string s, string t)
 	    cerr << "Attention mot non trouvé : " << s << endl;
 	    return 0.0;
 	}
-	if (mapT->find(t) == mapT->end())
+	if (mapS->find(t) == mapS->end())
 	{
 	    cerr << "Attention mot non trouvé : " << t << endl;
 	    return 0.0;
@@ -352,6 +364,7 @@ vector< alignmentData > monolingualModel::oneToManyAlignment(string src, string 
 	vector<string> v_src = stringToVector(src," ");
 	vector<string> v_tgt = stringToVector(tgt," ");
 // 	vector< vector< pair< int, float > > > 
+	vector< alignmentData > to_retrun;
 	int i,j;
 	float l_norm = 0.0;
 	for (i=0; i<(int)v_src.size(); i++)
@@ -370,5 +383,6 @@ vector< alignmentData > monolingualModel::oneToManyAlignment(string src, string 
                       cout << "\t\t- " << v_tgt.at(j) << "\t" << crossCosine(v_src.at(i),v_tgt.at(j)) << "\t" << crossCosine(v_src.at(i),v_tgt.at(j))/l_norm<<endl;
                 }
 	}
+	return to_retrun;
 }
 

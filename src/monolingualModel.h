@@ -35,21 +35,19 @@ class monolingualModel
 {
     private:
       multimap< size_t, biWord*  > * ms;
-      multimap< size_t, biWord*  > * mt;
       multimap< string, size_t  > * mapS;
-      multimap< string, size_t  > * mapT;
 //       multimap< size_t, multimap< size_t, double  >* > * distance;
       int nthreads;
       vector< vector<float> > * d_scores;
-      int nbest;
+      int m_nbest;
     public:
-      bilingualModel();
-      bilingualModel(string FileNameMS, string FileNameMT);
-      ~bilingualModel();
+      monolingualModel();
+      monolingualModel(string FileNameMS);
+      ~monolingualModel();
       multimap< size_t, biWord*  > * getMS();
-      multimap< size_t, biWord*  > * getMT();
       void subprocess(biWord* l_bi_word);
       vector<biWord> * recherche(string s);
+      vector<biWord> * recherche(string s, int nbest);
       float crossCosine(string s, string t);
       void oneToOneAlignment(string src, string tgt);
       vector< alignmentData > oneToManyAlignment(string src, string tgt);

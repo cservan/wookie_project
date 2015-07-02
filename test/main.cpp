@@ -44,6 +44,7 @@
 // #include "xmlStructure.h"
 #include "tools.h"
 #include "bilingualModel.h"
+#include "monolingualModel.h"
 // #include "multiEvaluation.h"
 
 
@@ -148,28 +149,28 @@ int main ( int argc, char *argv[] )
         cerr << "ERROR : main : models file are not set !" << endl;
         usage();
     }
-    bilingualModel l_bm(myParams.model_source, myParams.model_target);
-//     string s="comptes";
-//     vector< biWord>* resultats;
+    monolingualModel l_bm(myParams.model_source);
+    string s="comptes";
+    vector< biWord>* resultats;
 //     while (s.compare("EXIT") != 0)
 //     {
 // 	resultats = new vector< biWord>;
         
 // 	cout << "Entrez le mot à rechercher:"<<endl;
 // 	cin >> s ;
-// 	cout << "Nous cherchons :"<< s <<endl;
-// 	resultats = l_bm.recherche(s);
-// 	s=".";
-//         resultats = l_bm.recherche(s);
-// 	s=",";
-//         resultats = l_bm.recherche(s);
-// 	s="?";
-//         resultats = l_bm.recherche(s);
-// 	s="!";
-//         resultats = l_bm.recherche(s);	
-	l_bm.oneToOneAlignment("ceci est un test !","this is a test !");
-	cerr << "Deuxieme recherche:"<<endl;
-	l_bm.oneToOneAlignment("reprise de la session","resumption of the session");
+	cout << "Nous cherchons :"<< s <<endl;
+	resultats = l_bm.recherche(s);
+	s=".";
+        resultats = l_bm.recherche(s);
+	s=",";
+        resultats = l_bm.recherche(s);
+	s="?";
+        resultats = l_bm.recherche(s);
+	s="!";
+        resultats = l_bm.recherche(s);	
+// 	l_bm.oneToOneAlignment("ceci est un test !","this is a test !");
+// 	cerr << "Deuxieme recherche:"<<endl;
+// 	l_bm.oneToOneAlignment("reprise de la session","resumption of the session");
 
 //	if (s.compare("EXIT") == 0)
 //	{
