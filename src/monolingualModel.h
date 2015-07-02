@@ -25,7 +25,9 @@
 #include "tools.h"
 #include "biword.h"
 #include "alignmentData.h"
+#include <boost/numeric/ublas/matrix_sparse.hpp>
 
+namespace ublas = boost::numeric::ublas;
 
 
 using namespace std;
@@ -38,7 +40,8 @@ class monolingualModel
       multimap< string, size_t  > * mapS;
 //       multimap< size_t, multimap< size_t, double  >* > * distance;
       int nthreads;
-      vector< vector<float> > * d_scores;
+      ublas::compressed_matrix<float> * d_scores;
+//       vector< vector<float> > * d_scores;
       int m_nbest;
     public:
       monolingualModel();
