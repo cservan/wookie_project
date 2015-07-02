@@ -148,7 +148,7 @@ monolingualModel::monolingualModel(string FileNameMS)
 // 	    exit(0);
 	}
     }
-    group.join_all();
+    group->join_all();
 //     return;
 //     while (l_iter_src != ms->end())
 //     {
