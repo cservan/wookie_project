@@ -20,7 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * **********************************/
 
-#include "bilingualModel.h"
+#include "monolingualModel.h"
 #include <iostream>
 #include <fstream>
 #include <boost/thread/thread.hpp>
@@ -31,26 +31,26 @@
 using namespace std;
 using namespace Tools;
 
-bilingualModel::bilingualModel()
+monolingualModel::monolingualModel()
 {
       ms = new multimap< size_t, biWord* >();
       mt = new multimap< size_t, biWord* >();
       nthreads = 4;
 }
-multimap< size_t, biWord* >* bilingualModel::getMS()
+multimap< size_t, biWord* >* monolingualModel::getMS()
 {
     return ms;
 }
-multimap< size_t, biWord* >* bilingualModel::getMT()
+multimap< size_t, biWord* >* monolingualModel::getMT()
 {
     return mt;
 }
-bilingualModel::~bilingualModel()
+monolingualModel::~monolingualModel()
 {
     delete(ms);
     delete(mt);
 }
-bilingualModel::bilingualModel(string FileNameMS, string FileNameMT)
+monolingualModel::monolingualModel(string FileNameMS, string FileNameMT)
 {
     ms = new multimap< size_t, biWord* >();
     mt = new multimap< size_t, biWord* >();
@@ -161,8 +161,8 @@ bilingualModel::bilingualModel(string FileNameMS, string FileNameMT)
     while (l_iter_src != ms->end())
     {
 	l_cpt++;
-	t = new boost::thread(boost::bind(&bilingualModel::subprocess,this,(*l_iter_src).second));
-// 	t = new boost::thread(bilingualModel subprocess,(*l_iter_src).second));
+	t = new boost::thread(boost::bind(&monolingualModel::subprocess,this,(*l_iter_src).second));
+// 	t = new boost::thread(monolingualModel subprocess,(*l_iter_src).second));
 // 	multimap< size_t, float  >* l_multimap = new multimap< size_t, float  >();
 // 	multimap< size_t, biWord* >::iterator l_iter_tgt;
 // 	float l_score=0.0;
@@ -218,7 +218,7 @@ bilingualModel::bilingualModel(string FileNameMS, string FileNameMT)
 
 }
 
-void bilingualModel::subprocess(biWord* l_bi_word)
+void monolingualModel::subprocess(biWord* l_bi_word)
 {
 // 	vector<float> * v_scores = new vector<float> ((int)ms->size()+1,0.0);
 	multimap< size_t, biWord* >::iterator l_iter_tgt;
@@ -246,7 +246,7 @@ bool mySortingFunction ( const pair<float, int>& i, const pair<float, int>& j )
 // 	return j.second < i.second;
 }
 
-vector<biWord> * bilingualModel::recherche(string s)
+vector<biWord> * monolingualModel::recherche(string s)
 {
 	size_t src_id=-1;
 	vector<biWord> * to_retrun = new vector< biWord >;
@@ -305,7 +305,7 @@ vector<biWord> * bilingualModel::recherche(string s)
 	}
 	return to_retrun;
 }
-float bilingualModel::crossCosine(string s, string t)
+float monolingualModel::crossCosine(string s, string t)
 {
 	multimap< string, size_t  >::iterator mapS_iter = mapS->find(s);
 	multimap< string, size_t  >::iterator mapT_iter = mapT->find(t);
@@ -326,7 +326,7 @@ float bilingualModel::crossCosine(string s, string t)
 	return d_scores->at(src_id).at(tgt_id);
 }
 
-void bilingualModel::oneToOneAlignment(string src, string tgt)
+void monolingualModel::oneToOneAlignment(string src, string tgt)
 {
 	vector<string> v_src = stringToVector(src," ");
 	vector<string> v_tgt = stringToVector(tgt," ");
@@ -347,7 +347,7 @@ void bilingualModel::oneToOneAlignment(string src, string tgt)
                 }
 	}
 }
-vector< alignmentData > bilingualModel::oneToManyAlignment(string src, string tgt)
+vector< alignmentData > monolingualModel::oneToManyAlignment(string src, string tgt)
 {
 	vector<string> v_src = stringToVector(src," ");
 	vector<string> v_tgt = stringToVector(tgt," ");

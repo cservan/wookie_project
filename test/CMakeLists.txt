@@ -29,6 +29,7 @@ SET(bidistance_SRCS
    ${CMAKE_SOURCE_DIR}/src/tools.cpp
    ${CMAKE_SOURCE_DIR}/src/biword.cpp
    ${CMAKE_SOURCE_DIR}/src/bilingualModel.cpp
+   ${CMAKE_SOURCE_DIR}/src/alignmentData.cpp
 )
 
 SET(threads_tests_SRCS
@@ -36,12 +37,12 @@ SET(threads_tests_SRCS
    
 )
 
-add_executable(bidistance ${bidistance_SRCS})
+add_executable(bidistance2 ${bidistance_SRCS})
 #add_executable(threads_tests ${threads_tests_SRCS})
 
-target_link_libraries(bidistance boost_regex boost_system boost_filesystem boost_iostreams boost_thread)
+target_link_libraries(bidistance2 boost_regex boost_system boost_filesystem boost_iostreams boost_thread)
 #target_link_libraries(threads_tests boost_thread)
 # target_link_libraries(wookie tercalc xmlStructure documentStructure multiEvaluation)
 # 
-install(TARGETS bidistance  DESTINATION bin)
+install(TARGETS bidistance2  DESTINATION bin)
 

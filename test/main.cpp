@@ -168,6 +168,9 @@ int main ( int argc, char *argv[] )
 // 	s="!";
 //         resultats = l_bm.recherche(s);	
 	l_bm.oneToOneAlignment("ceci est un test !","this is a test !");
+	cerr << "Deuxieme recherche:"<<endl;
+	l_bm.oneToOneAlignment("reprise de la session","resumption of the session");
+
 //	if (s.compare("EXIT") == 0)
 //	{
 //	    return EXIT_SUCCESS;

@@ -19,8 +19,8 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * **********************************/
-#ifndef __BILINGUAL_H__
-#define __BILINGUAL_H__
+#ifndef __MONOLINGUAL_H__
+#define __MONOLINGUAL_H__
 
 #include "tools.h"
 #include "biword.h"
@@ -31,7 +31,7 @@
 using namespace std;
 using namespace Tools;
 
-class bilingualModel
+class monolingualModel
 {
     private:
       multimap< size_t, biWord*  > * ms;
