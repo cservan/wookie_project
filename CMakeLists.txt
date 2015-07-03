@@ -18,7 +18,7 @@ include_directories(/home/servan/Tools/myLibs/icu/include)
 ADD_DEFINITIONS(-Wall -O2  -DINSTANTIATE_TEMPLATES )
 
 #list all source files here
-# add_subdirectory(src)
+add_subdirectory(src)
 add_subdirectory(test)
 
 
