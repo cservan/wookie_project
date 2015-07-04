@@ -31,6 +31,7 @@ SET(bidistance_SRCS
    ${CMAKE_SOURCE_DIR}/src/bilingualModel.cpp
    ${CMAKE_SOURCE_DIR}/src/monolingualModel.cpp
    ${CMAKE_SOURCE_DIR}/src/alignmentData.cpp
+   ${CMAKE_SOURCE_DIR}/src/distance.cpp
 )
 
 SET(threads_tests_SRCS

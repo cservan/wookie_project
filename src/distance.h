@@ -36,6 +36,8 @@ const long long N = 40;                  // number of closest words that will be
 const long long max_w = 50;              // max length of vocabulary entries
 using namespace std;
 
+namespace word2vecdistance
+{
 class distance
 {
     private:
@@ -51,6 +53,6 @@ class distance
       distance(string filename);
       vector < pair < string, float > > recherche(string s);
 };
-      
+}      
 #endif
 

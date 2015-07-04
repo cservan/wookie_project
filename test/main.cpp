@@ -44,6 +44,7 @@
 // #include "xmlStructure.h"
 #include "tools.h"
 #include "bilingualModel.h"
+#include "distance.h"
 #include "monolingualModel.h"
 // #include "multiEvaluation.h"
 
@@ -149,6 +150,15 @@ void usage()
 
 }
 
+void toString(vector < pair < string, float > > resultats)
+{
+    int l_inc;
+    for (l_inc = 0; l_inc < (int) resultats.size(); l_inc ++)
+    {
+	cout << l_inc << "\t" << resultats.at(l_inc).first << "\t" << resultats.at(l_inc).second << "\t" << endl;
+    }
+  
+}
 
 int main ( int argc, char *argv[] )
 {
@@ -159,9 +169,10 @@ int main ( int argc, char *argv[] )
         cerr << "ERROR : main : models file are not set !" << endl;
         usage();
     }
-    monolingualModel l_bm(myParams.model_source, myParams.threads, myParams.threshold);
+    word2vecdistance::distance l_d(myParams.model_source);
+//     monolingualModel l_bm(myParams.model_source, myParams.threads, myParams.threshold);
     string s="comptes";
-    vector< biWord>* resultats;
+    vector < pair < string, float > > resultats;
 //     while (s.compare("EXIT") != 0)
 //     {
 // 	resultats = new vector< biWord>;
@@ -169,19 +180,24 @@ int main ( int argc, char *argv[] )
 // 	cout << "Entrez le mot à rechercher:"<<endl;
 // 	cin >> s ;
 	cout << "Nous cherchons :"<< s <<endl;
-	resultats = l_bm.recherche(s);
-	s=".";
+	resultats = l_d.recherche(s);
+	toString(resultats);
+	s="chien";
 	cout << "Nous cherchons :"<< s <<endl;
-        resultats = l_bm.recherche(s);
-	s=",";
+        resultats = l_d.recherche(s);
+	toString(resultats);
+	s="directives";
 	cout << "Nous cherchons :"<< s <<endl;
-        resultats = l_bm.recherche(s);
-	s="?";
+        resultats = l_d.recherche(s);
+	toString(resultats);
+	s="paris";
 	cout << "Nous cherchons :"<< s <<endl;
-        resultats = l_bm.recherche(s);
-	s="!";
+        resultats = l_d.recherche(s);
+	toString(resultats);
+	s="voitures";
 	cout << "Nous cherchons :"<< s <<endl;
-        resultats = l_bm.recherche(s);	
+        resultats = l_d.recherche(s);	
+	
 // 	l_bm.oneToOneAlignment("ceci est un test !","this is a test !");
 // 	cerr << "Deuxieme recherche:"<<endl;
 // 	l_bm.oneToOneAlignment("reprise de la session","resumption of the session");
