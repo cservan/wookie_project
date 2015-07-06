@@ -44,7 +44,7 @@ class distance
       FILE *f;
       char *bestw[N];
       char file_name[max_size], st[100][max_size];
-      float dist, len, bestd[N], vec[max_size];
+      float dist, len, bestd[N];
       long long words, size, a, b, c, d, cn, bi[100];
       char ch;
       float *M;
@@ -52,6 +52,7 @@ class distance
     public:
       distance(string filename);
       vector < pair < string, float > > recherche(string s);
+      float getDistance(string s1,string s2);
 };
 }      
 #endif

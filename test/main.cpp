@@ -155,7 +155,7 @@ void toString(vector < pair < string, float > > resultats)
     int l_inc;
     for (l_inc = 0; l_inc < (int) resultats.size(); l_inc ++)
     {
-	cout << l_inc << "\t" << resultats.at(l_inc).first << "\t" << resultats.at(l_inc).second << "\t" << endl;
+	cout << l_inc+1 << "\t" << resultats.at(l_inc).first << "\t" << resultats.at(l_inc).second << "\t" << endl;
     }
   
 }
@@ -172,6 +172,7 @@ int main ( int argc, char *argv[] )
     word2vecdistance::distance l_d(myParams.model_source);
 //     monolingualModel l_bm(myParams.model_source, myParams.threads, myParams.threshold);
     string s="comptes";
+    string s2="véhicules";
     vector < pair < string, float > > resultats;
 //     while (s.compare("EXIT") != 0)
 //     {
@@ -179,24 +180,41 @@ int main ( int argc, char *argv[] )
         
 // 	cout << "Entrez le mot à rechercher:"<<endl;
 // 	cin >> s ;
-	cout << "Nous cherchons :"<< s <<endl;
-	resultats = l_d.recherche(s);
-	toString(resultats);
-	s="chien";
-	cout << "Nous cherchons :"<< s <<endl;
-        resultats = l_d.recherche(s);
-	toString(resultats);
-	s="directives";
-	cout << "Nous cherchons :"<< s <<endl;
-        resultats = l_d.recherche(s);
-	toString(resultats);
-	s="paris";
-	cout << "Nous cherchons :"<< s <<endl;
-        resultats = l_d.recherche(s);
-	toString(resultats);
+// 	cout << "Nous cherchons :"<< s <<endl;
+// 	resultats = l_d.recherche(s);
+// 	toString(resultats);
+// 	s="chien";
+// 	cout << "Nous cherchons :"<< s <<endl;
+//         resultats = l_d.recherche(s);
+// 	toString(resultats);
+// 	s="directives";
+// 	cout << "Nous cherchons :"<< s <<endl;
+//         resultats = l_d.recherche(s);
+// 	toString(resultats);
+// 	s="paris";
+// 	cout << "Nous cherchons :"<< s <<endl;
+//         resultats = l_d.recherche(s);
 	s="voitures";
 	cout << "Nous cherchons :"<< s <<endl;
         resultats = l_d.recherche(s);	
+	toString(resultats);
+        s2="véhicules";
+	cout << "Nous comparons :"<< s << " et "<< s2<<endl;
+        cout<< l_d.getDistance(s,s2) <<endl;
+        s2="camionnettes";
+	cout << "Nous comparons :"<< s << " et "<< s2<<endl;
+        cout<< l_d.getDistance(s,s2) <<endl;
+        s2="utilitaires";
+	cout << "Nous comparons :"<< s << " et "<< s2<<endl;
+        cout<< l_d.getDistance(s,s2) <<endl;
+        s2="automobiles";
+	cout << "Nous comparons :"<< s << " et "<< s2<<endl;
+        cout<< l_d.getDistance(s,s2) <<endl;
+        s2="YOYOOOOOOO";
+	cout << "Nous comparons :"<< s << " et "<< s2<<endl;
+        cout<< l_d.getDistance(s,s2) <<endl;
+	
+// 	toString(resultats);
 	
 // 	l_bm.oneToOneAlignment("ceci est un test !","this is a test !");
 // 	cerr << "Deuxieme recherche:"<<endl;
