@@ -200,19 +200,19 @@ int main ( int argc, char *argv[] )
 	toString(resultats);
         s2="véhicules";
 	cout << "Nous comparons :"<< s << " et "<< s2<<endl;
-        cout<< l_d.getDistance(s,s2) <<endl;
+        cout<< l_d.getDistance(s.c_str(),s2.c_str()) <<endl;
         s2="camionnettes";
 	cout << "Nous comparons :"<< s << " et "<< s2<<endl;
-        cout<< l_d.getDistance(s,s2) <<endl;
+        cout<< l_d.getDistance(s.c_str(),s2.c_str()) <<endl;
         s2="utilitaires";
 	cout << "Nous comparons :"<< s << " et "<< s2<<endl;
-        cout<< l_d.getDistance(s,s2) <<endl;
+        cout<< l_d.getDistance(s.c_str(),s2.c_str()) <<endl;
         s2="automobiles";
 	cout << "Nous comparons :"<< s << " et "<< s2<<endl;
-        cout<< l_d.getDistance(s,s2) <<endl;
-        s2="YOYOOOOOOO";
+        cout<< l_d.getDistance(s.c_str(),s2.c_str()) <<endl;
+        s2="voitures";
 	cout << "Nous comparons :"<< s << " et "<< s2<<endl;
-        cout<< l_d.getDistance(s,s2) <<endl;
+        cout<< l_d.getDistance(s.c_str(),s2.c_str()) <<endl;
 	
 // 	toString(resultats);
 	

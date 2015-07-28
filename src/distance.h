@@ -35,9 +35,11 @@ const long long max_size = 2000;         // max length of strings
 const long long N = 40;                  // number of closest words that will be shown
 const long long max_w = 50;              // max length of vocabulary entries
 using namespace std;
+const int vocab_hash_size = 30000000;
 
 namespace word2vecdistance
 {
+  
 class distance
 {
     private:
@@ -49,10 +51,17 @@ class distance
       char ch;
       float *M;
       char *vocab;
+      int *vocab_hash;
     public:
       distance(string filename);
       vector < pair < string, float > > recherche(string s);
       float getDistance(string s1,string s2);
+      float getDistance(char * s1,char * s2);
+      bool strcompare(char * c1, char * c2);
+      int getWordHash(char *word);
+      int searchVocab(char *word);
+      void addWordToHash(char *word, int l_pos);
+      void fillHash();
 };
 }      
 #endif
